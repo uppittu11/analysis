@@ -34,7 +34,34 @@ def smoothing(y, window_size, order, deriv=0, rate=1):
     y = np.concatenate((firstvals, y, lastvals))
     return np.convolve(m[::-1], y, mode='valid')
 
-def calc_height(frame, atomselection, n_frames, window, n_layers, masses):
+def calc_height(frame, atomselection, window, n_layers, masses):
+    """
+    Calculates the heights of the bilayers present in the system.
+    These are generally "head-to-head" heights depending on the
+    atomselection.
+
+    Parameters
+    ----------
+    frame : mdtraj.Trajectory
+        simulation frame
+    atomselection : list
+        list of selected atom indices to use for calculating height.
+        These are typically the indices of head atoms
+    window : int
+        window_size for savitzky golay smoothing filter
+    n_layers : int
+        number of layers in bilayer. Note that this is the number of
+        layer not the number of leaflets
+    masses : list
+        masses of each of the atoms in the frame.
+
+    Returns
+    -------
+    heights : list
+        list of bilayer heights for each bilayer in the system. These
+        are not in any particular order
+    """
+
     atoms = frame.top.select(atomselection) # which atoms to plot
     box_length = np.mean([frame.unitcell_lengths[0,2]])
     hist, edges = np.histogram(frame.xyz[0, atoms, 2].reshape(-1), weights=np.tile(masses.take(atoms), n_frames),
@@ -50,5 +77,5 @@ def calc_height(frame, atomselection, n_frames, window, n_layers, masses):
         hist = hist[np.abs( hist[:,0] - peaks[i][0] ) > 3.0]
 
     peaks = np.array(peaks)[:,1].sort()
-    height = peaks[1:] - peaks[:-1]
-    return height
+    heights = peaks[1:] - peaks[:-1]
+    return heights
