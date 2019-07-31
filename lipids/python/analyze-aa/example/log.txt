@@ -1,0 +1,44 @@
+Loaded trajectory with 41 frames
+Loaded masses
+unique
+unique
+unique
+unique
+unique
+unique
+unique
+unique
+unique
+unique
+unique
+unique
+unique
+unique
+unique
+unique
+unique
+unique
+unique
+unique
+unique
+unique
+unique
+unique
+unique
+unique
+unique
+unique
+unique
+unique
+unique
+unique
+unique
+unique
+unique
+unique
+unique
+unique
+unique
+unique
+unique
+Printing output files
