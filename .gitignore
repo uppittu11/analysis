@@ -1,0 +1,6 @@
+# ignore all trajectory and topology files
+*.xtc
+*.dcd
+*.gro
+*.hoomdxml
+*traj.p
