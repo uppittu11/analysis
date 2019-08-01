@@ -1,7 +1,4 @@
 import mdtraj as md
-import numpy as np
-import matplotlib.pyplot as plt
-import xml.etree.ElementTree as ET
 from .molecules import *
 
 def load_system(traj, system):

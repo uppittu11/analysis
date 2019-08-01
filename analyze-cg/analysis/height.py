@@ -73,7 +73,7 @@ def calc_height(frame, atomselection, n_layers, masses):
 
     for i in range(n_layers):
         peaks.append(hist[0])
-        hist = hist[np.abs( hist[:,1] - peaks[i][1] ) > 3.0]
+        hist = hist[np.abs( hist[:,1] - peaks[i][1] ) > 0.5]
 
     peaks = np.sort(np.array(peaks)[:,1])
     heights = peaks[1:] - peaks[:-1]
