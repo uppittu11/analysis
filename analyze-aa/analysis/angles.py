@@ -21,7 +21,7 @@ def calc_angle(vec1, vec2):
     dot = np.sum(np.array(vec1)*np.array(vec2), axis=1)
     theta = np.arccos(dot)*180/np.pi
     mask = (theta > 90).astype(int)
-    theta = (180*mask) - theta * (-1*mask)
+    theta = (180*mask) + theta + theta * (-2*mask)
     return theta
 
 def calc_direction_vector(coord1, coord2):

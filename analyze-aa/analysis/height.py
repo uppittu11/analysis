@@ -1,7 +1,6 @@
 import mdtraj as md
 import numpy as np
-import matplotlib.pyplot as plt
-import xml.etree.ElementTree as ET
+from math import factorial
 from  .molecules import *
 
 def smoothing(y, window_size, order, deriv=0, rate=1):
@@ -34,7 +33,7 @@ def smoothing(y, window_size, order, deriv=0, rate=1):
     y = np.concatenate((firstvals, y, lastvals))
     return np.convolve(m[::-1], y, mode='valid')
 
-def calc_height(frame, atomselection, window, n_layers, masses):
+def calc_height(frame, atomselection, n_layers, masses):
     """
     Calculates the heights of the bilayers present in the system.
     These are generally "head-to-head" heights depending on the
@@ -64,18 +63,19 @@ def calc_height(frame, atomselection, window, n_layers, masses):
 
     atoms = frame.top.select(atomselection) # which atoms to plot
     box_length = np.mean([frame.unitcell_lengths[0,2]])
-    hist, edges = np.histogram(frame.xyz[0, atoms, 2].reshape(-1), weights=np.tile(masses.take(atoms), n_frames),
+    hist, edges = np.histogram(frame.xyz[0, atoms, 2].reshape(-1), weights=masses.take(atoms),
                                range=[-.01,box_length+.01], bins=400)
     bins = (edges[1:]+edges[:-1]) / 2.0
-    hist = smoothing(hist, window, order)
+    hist = smoothing(hist, 9, 2)
     hist = np.array([(hist[i], bins[i]) for i in range(len(hist))])
-    hist.sort(reverse=True)
+    hist = hist[hist[:,0].argsort()][::-1]
     peaks = []
 
     for i in range(n_layers):
         peaks.append(hist[0])
-        hist = hist[np.abs( hist[:,0] - peaks[i][0] ) > 3.0]
+        print(hist)
+        hist = hist[np.abs( hist[:,1] - peaks[i][1] ) > 3.0]
 
-    peaks = np.array(peaks)[:,1].sort()
+    peaks = np.sort(np.array(peaks)[:,1])
     heights = peaks[1:] - peaks[:-1]
     return heights

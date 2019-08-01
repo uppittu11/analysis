@@ -1,7 +1,5 @@
 import mdtraj as md
 import numpy as np
-import matplotlib.pyplot as plt
-import xml.etree.ElementTree as ET
 
 def calc_com(coords, masses):
     """ Calculate the center of mass of a list of coordinates
