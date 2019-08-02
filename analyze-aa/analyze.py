@@ -106,7 +106,7 @@ def analyze_chunk(traj, masses, n_leaflets, bilayer):
     else:
         analyze_frame = analyze_frame_multilayer
 
-    chunk_results = [analyze_frame(frame, masses, n_leaflets) for frame in traj]
+    chunk_results = np.array([analyze_frame(frame, masses, n_leaflets) for frame in traj])
     return chunk_results
 
 def main():
@@ -163,6 +163,7 @@ def main():
         traj.save('{}/traj.h5'.format(outputdir))
 
     # Set number of frames
+    traj = traj[:20]
     n_frames = traj.n_frames
     print('Loaded trajectory with {} frames'.format(n_frames))
 
@@ -197,16 +198,22 @@ def main():
     # Get parallel processes
     print('Starting {} parallel threads'.format(mp.cpu_count()))
     n_processes = mp.cpu_count()
-    chunksize = int(len(traj)/n_processes) + 1
-    traj = [traj[chunk*chunksize:(chunk+1)*chunksize] if chunk < n_processes-1
-            else traj[chunk*chunksize:]
-            for chunk in range(n_processes)]
+    chunksize = [0]*n_processes
+    for frame in range(n_frames):
+        chunksize[frame%n_processes] += 1
+    chunksize = [sum(chunksize[:i+1]) for i in range(n_processes)] + [n_frames]
+    input("Press ENTER to continue...")
+    traj = [traj[chunksize[i]:chunksize[i+1]] for i in range(n_processes-1)]
+    print(traj)
+    input("Press ENTER to continue...")
     inputs = zip(traj, [masses]*n_processes, [n_leaflets]*n_processes, [bilayer]*n_processes)
+    input("Press ENTER to continue...")
     pool = mp.Pool(mp.cpu_count())
     results = pool.starmap(analyze_chunk, inputs)
 
     print('Cleaning up results')
-    results = np.array(results)
+    print([thing.shape for thing in results])
+    results = np.concatenate(results, axis=0)
 
 
     # Dump pickle file of results
