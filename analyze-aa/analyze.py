@@ -143,7 +143,6 @@ def main():
         traj.save('{}/traj.h5'.format(outputdir))
 
     # Set number of frames
-    traj = traj[::10]
     n_frames = traj.n_frames
     print('Loaded trajectory with {} frames'.format(n_frames))
 
