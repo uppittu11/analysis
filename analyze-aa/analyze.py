@@ -110,6 +110,8 @@ def analyze_chunk(traj, masses, n_leaflets, bilayer):
     return chunk_results
 
 def main():
+    mp.set_start_method('spawn')
+    pool = mp.Pool(mp.cpu_count())
     ## PARSING INPUTS
     trajfile = sys.argv[1]
     topfile  = sys.argv[2]
@@ -202,13 +204,8 @@ def main():
     for frame in range(n_frames):
         chunksize[frame%n_processes] += 1
     chunksize = [sum(chunksize[:i+1]) for i in range(n_processes)] + [n_frames]
-    input("Press ENTER to continue...")
     traj = [traj[chunksize[i]:chunksize[i+1]] for i in range(n_processes-1)]
-    print(traj)
-    input("Press ENTER to continue...")
     inputs = zip(traj, [masses]*n_processes, [n_leaflets]*n_processes, [bilayer]*n_processes)
-    input("Press ENTER to continue...")
-    pool = mp.Pool(mp.cpu_count())
     results = pool.starmap(analyze_chunk, inputs)
 
     print('Cleaning up results')
