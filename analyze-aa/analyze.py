@@ -63,7 +63,7 @@ def analyze_all(frame, masses, n_leaflets, bilayer=False):
                                         (resname ffa24 and name O27)'
         height = analysis.utils.calc_height(frame, atomselection, int(n_leaflets/2+1), masses)
 
-        return [np.mean(tilt_top), stats.sem(tilt_top), np.mean(tilt_bot), stats.sem(tilt_bot),
+        return [np.mean(tilt_top), stats.sem(tilt_top), np.mean(tilt_bottom), stats.sem(tilt_bottom),
                 np.mean(s2_top), np.mean(s2_bot), apl_top, apl_bot, height]
 
     # If the system is a multilayer, do not attempt to differentiate layers here.
