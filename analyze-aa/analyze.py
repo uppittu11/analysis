@@ -64,7 +64,7 @@ def analyze_all(frame, masses, n_leaflets, bilayer=False):
         height = analysis.utils.calc_height(frame, atomselection, int(n_leaflets/2+1), masses)
 
         return [np.mean(tilt_top), stats.sem(tilt_top), np.mean(tilt_bottom), stats.sem(tilt_bottom),
-                np.mean(s2_top), np.mean(s2_bot), apl_top, apl_bot, height]
+                np.mean(s2_top), np.mean(s2_bottom), apl_top, apl_bottom, height]
 
     # If the system is a multilayer, do not attempt to differentiate layers here.
     # Note: if you want to calculate properties for a particular layer, slice it
