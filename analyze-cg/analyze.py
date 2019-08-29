@@ -84,7 +84,7 @@ def analyze_all(frame, masses, n_leaflets, bilayer=False):
         # Calculate the height -- uses the "head" atoms specified below
         atomselection = 'name mhead2 oh1 oh2 oh3 oh4 oh5 amide chead head'
         height = analysis.utils.calc_height(frame, atomselection,int(n_leaflets/2+1), masses)
-        return [np.mean(tilt), stats.sem(tilt), np.mean(s2), apl, np.mean(height)]
+        return [np.array(tilt), s2, apl, height]
 
 def main():
     ## PARSING INPUTS
@@ -159,7 +159,7 @@ def main():
     results = pool.starmap(analyze_all, inputs, chunksize=chunksize)
 
     print('Cleaning up results')
-    results = np.array(results)
+    #results = np.array(results)
 
 
     # Dump pickle file of results

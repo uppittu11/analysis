@@ -9,11 +9,11 @@ with open('results.p', 'rb') as f:
 # Check if the results are for a bilayer (top and bottom) or
 # for a multilayer (no distinction)
 if len(results[0]) <= 5:
-    tilt = results[:,:2]
-    print("Tilt :   {:.5f} +/- {:.5f}".format(np.mean(tilt[:,0]), np.linalg.norm(tilt[:,1])))
-    s2 = results[:,2]
+    tilt = np.array([result[0] for result in results])
+    print("Tilt :   {:.5f} +/- {:.5f}".format(np.mean(tilt), stats.sem(tilt, axis=None)))
+    s2 = np.array([result[1] for result in results])
     print("S2 :     {:.5f} +/- {:.5f}".format(np.mean(s2), stats.sem(s2)))
-    apl = results[:,3] * 36
+    apl = np.array([result[2] for result in results]) * 36
     print("APL :    {:.5f} +/- {:.5f}".format(np.mean(apl), stats.sem(apl)))
-    height = results[:,4] * 6
-    print("Height : {:.5f} +/- {:.5f}".format(np.mean(height), stats.sem(height)))
+    height = np.array([result[3] for result in results]) * 6
+    print("Height : {:.5f} +/- {:.5f}".format(np.mean(height), stats.sem(height, axis=None)))

@@ -41,7 +41,7 @@ def analyze_all(frame, masses, n_leaflets, bilayer=False):
         s2_top = analysis.utils.calc_order_parameter(directors)
 
         # Calculate Area per Lipid: cross section / n_lipids
-        apl_top = frame.unitcell_lengths[0, 0]**2 / len(top)
+        apl_top = frame.unitcell_lengths[0, 0]*frame.unitcell_lengths[0, 1] / len(top)
 
 
         ## For the top leaflet:
@@ -55,7 +55,7 @@ def analyze_all(frame, masses, n_leaflets, bilayer=False):
         s2_bottom = analysis.utils.calc_order_parameter(directors)
 
         # Calculate Area per Lipid: cross section / n_lipids
-        apl_bottom = frame.unitcell_lengths[0, 0]**2 / len(bottom)
+        apl_bottom = frame.unitcell_lengths[0, 0]*frame.unitcell_lengths[0, 1] / len(bottom)
 
         # Calculate the height -- uses the "head" atoms specified below
         atomselection = '(resname ucer2 ecer2 ucer3 ecer3 ucer6 ecer6 and name N1) or \
