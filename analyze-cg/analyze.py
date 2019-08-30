@@ -62,8 +62,8 @@ def analyze_all(frame, masses, n_leaflets, bilayer=False):
         atomselection = 'name mhead2 oh1 oh2 oh3 oh4 oh5 amide chead head'
         height = analysis.utils.calc_height(frame, atomselection, int(n_leaflets/2+1), masses)
 
-        return [np.mean(tilt_top), stats.sem(tilt_top), np.mean(tilt_bot), stats.sem(tilt_bot),
-                np.mean(s2_top), np.mean(s2_bot), apl_top, apl_bot, height]
+        return [np.mean(tilt_top), stats.sem(tilt_top), np.mean(tilt_bottom), stats.sem(tilt_bottom),
+                np.mean(s2_top), np.mean(s2_bottom), apl_top, apl_bottom, height]
 
     # If the system is a multilayer, do not attempt to differentiate layers here.
     # Note: if you want to calculate properties for a particular layer, slice it
@@ -118,7 +118,6 @@ def main():
             print("Loading trajectory from {}".format(trajfile))
 
         # keep only the lipids
-        orig_top = traj.top
         select_atoms = traj.top.select("not name water")
         traj.atom_slice(select_atoms, inplace=True)
 
