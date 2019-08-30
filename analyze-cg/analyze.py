@@ -1,12 +1,13 @@
-import analysis.utils
-from analysis.molecules import molecule
-from xml.etree import cElementTree as ET
-import mdtraj as md
-import numpy as np
-import scipy.stats as stats
 import multiprocessing as mp
 import pickle
 import sys
+from optparse import OptionParser
+from xml.etree import cElementTree as ET
+import numpy as np
+import scipy.stats as stats
+import mdtraj as md
+import analysis.utils
+from analysis.molecules import molecule
 
 ## TO USE THIS SCRIPT ##
 # python analyze.py {trajectory_file} {topology_file} {output_directory} {N_leaflets} 
@@ -44,13 +45,17 @@ def analyze_all(frame, masses, n_leaflets):
 
 def main():
     ## PARSING INPUTS
-    trajfile = sys.argv[1]
-    topfile  = sys.argv[2]
-    outputdir = sys.argv[3]
-    try:
-        n_leaflets = int(sys.argv[4])
-    except:
-        n_leaflets = 1
+    parser = OptionParser()
+    parser.add_option("-f", "--file", action="store", type="string", dest="trajfile")
+    parser.add_option("-c", "--conf", action="store", type="string", dest="topfile")
+    parser.add_option("-o", "--output", action="store", type="string", dest="outputdir", default="./")
+    parser.add_option("-n", "--nleaflets", action="store", type="int", dest="n_leaflets",  default=1)
+    (options, args) = parser.parse_args()
+
+    trajfile = options.trajfile
+    topfile  = options.topfile
+    outputdir = options.outputdir
+    n_leaflets = options.n_leaflets
 
     ## LOADING TRAJECTORIES
     # If previous traj exists:
