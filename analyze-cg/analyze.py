@@ -50,7 +50,7 @@ def main():
     try:
         n_leaflets = int(sys.argv[4])
     except:
-        n_leaflets = None
+        n_leaflets = 1
 
     ## LOADING TRAJECTORIES
     # If previous traj exists:
