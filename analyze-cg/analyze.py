@@ -35,7 +35,7 @@ def analyze_all(frame, masses, n_leaflets):
     s2 = analysis.utils.calc_order_parameter(directors)
 
     # Calculate Area per Lipid: cross section / n_lipids
-    apl = frame.unitcell_lengths[0, 0]**2 / len(residues) * n_leaflets
+    apl = frame.unitcell_lengths[-1, 0] * frame.unitcell_lengths[-1, 1] / len(residues) * n_leaflets
 
     # Calculate the height -- uses the "head" atoms specified below
     atomselection = 'name mhead2 oh1 oh2 oh3 oh4 oh5 amide chead head'
