@@ -25,23 +25,22 @@ def analyze_all(frame, masses, n_leaflets):
 
     # Note: if you want to calculate properties for a particular layer, slice it
     # out prior to running this function
-    else:
-        # Calculates directors for a given set of residues
-        directors = analysis.utils.calc_all_directors(frame, masses, residues)
+    # Calculates directors for a given set of residues
+    directors = analysis.utils.calc_all_directors(frame, masses, residues)
 
-        # Calculate Tilt Angles
-        tilt = analysis.utils.calc_tilt_angle(directors)
+    # Calculate Tilt Angles
+    tilt = analysis.utils.calc_tilt_angle(directors)
 
-        # Calculate Nematic Order Parameter
-        s2 = analysis.utils.calc_order_parameter(directors)
+    # Calculate Nematic Order Parameter
+    s2 = analysis.utils.calc_order_parameter(directors)
 
-        # Calculate Area per Lipid: cross section / n_lipids
-        apl = frame.unitcell_lengths[0, 0]**2 / len(residues) * n_leaflets
+    # Calculate Area per Lipid: cross section / n_lipids
+    apl = frame.unitcell_lengths[0, 0]**2 / len(residues) * n_leaflets
 
-        # Calculate the height -- uses the "head" atoms specified below
-        atomselection = 'name mhead2 oh1 oh2 oh3 oh4 oh5 amide chead head'
-        height = analysis.utils.calc_height(frame, atomselection,int(n_leaflets/2+1), masses)
-        return [np.mean(tilt), stats.sem(tilt), np.mean(s2), apl, np.mean(height)]
+    # Calculate the height -- uses the "head" atoms specified below
+    atomselection = 'name mhead2 oh1 oh2 oh3 oh4 oh5 amide chead head'
+    height = analysis.utils.calc_height(frame, atomselection,int(n_leaflets/2+1), masses)
+    return [np.array(tilt), np.mean(s2), apl, np.array(height)]
 
 def main():
     ## PARSING INPUTS
@@ -78,7 +77,7 @@ def main():
 
         traj.save('{}/traj.h5'.format(outputdir))
 
-    # Set number of frames
+    # Get number of frames
     n_frames = traj.n_frames
     print('Loaded trajectory with {} frames'.format(n_frames))
 
