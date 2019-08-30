@@ -9,10 +9,10 @@ import pickle
 import sys
 
 ## TO USE THIS SCRIPT ##
-# python analyze.py {trajectory} {topology} {output directory} {N leaflets} {is bilayer?}
+# python analyze.py {trajectory_file} {topology_file} {output_directory} {N_leaflets} 
 
 
-def analyze_all(frame, masses, n_leaflets, bilayer=False):
+def analyze_all(frame, masses, n_leaflets):
     # Prints phase to terminal for each frame. Can be piped to a file and used to
     # track progress
     print('imaframe')
@@ -23,49 +23,6 @@ def analyze_all(frame, masses, n_leaflets, bilayer=False):
     # Sanitize inputs
     masses = np.array(masses)
 
-    # If the system is a bilayer, calculate properties for top and bottom leaflets
-    # separately
-    if bilayer:
-        # Gets residues from top and bottom leaflets; assumes a symmetrical system
-        midpoint = np.mean([frame.xyz[0, :, 2] for r in residues])
-        top = [r for r in residues if frame.xyz[0, r.atom(molecule[r.name][0]).index, 2] > midpoint]
-        bottom = [r for r in residues if frame.xyz[0, r.atom(molecule[r.name][0]).index, 2] < midpoint]
-
-        ## For the top leaflet:
-        # Calculates directors for a given set of residues
-        directors = analysis.utils.calc_all_directors(frame, masses, top)
-
-        # Calculate Tilt Angles
-        tilt_top = analysis.utils.calc_tilt_angle(directors)
-
-        # Calculate Nematic Order Parameter
-        s2_top = analysis.utils.calc_order_parameter(directors)
-
-        # Calculate Area per Lipid: cross section / n_lipids
-        apl_top = frame.unitcell_lengths[0, 0]**2 / len(top)
-
-
-        ## For the bottom leaflet:
-        # Calculates directors for a given set of residues
-        directors = analysis.utils.calc_all_directors(frame, masses, bottom)
-
-        # Calculate Tilt Angles
-        tilt_bottom = analysis.utils.calc_tilt_angle(directors)
-
-        # Calculate Nematic Order Parameter
-        s2_bottom = analysis.utils.calc_order_parameter(directors)
-
-        # Calculate Area per Lipid: cross section / n_lipids
-        apl_bottom = frame.unitcell_lengths[0, 0]**2 / len(bottom)
-
-        # Calculate the height -- uses the "head" atoms specified below
-        atomselection = 'name mhead2 oh1 oh2 oh3 oh4 oh5 amide chead head'
-        height = analysis.utils.calc_height(frame, atomselection, int(n_leaflets/2+1), masses)
-
-        return [np.mean(tilt_top), stats.sem(tilt_top), np.mean(tilt_bottom), stats.sem(tilt_bottom),
-                np.mean(s2_top), np.mean(s2_bottom), apl_top, apl_bottom, height]
-
-    # If the system is a multilayer, do not attempt to differentiate layers here.
     # Note: if you want to calculate properties for a particular layer, slice it
     # out prior to running this function
     else:
@@ -94,12 +51,7 @@ def main():
     try:
         n_leaflets = int(sys.argv[4])
     except:
-        n_leaflets = 2
-
-    try:
-        bilayer = eval(sys.argv[5])
-    except:
-        bilayer = False
+        n_leaflets = None
 
     ## LOADING TRAJECTORIES
     # If previous traj exists:
@@ -153,7 +105,7 @@ def main():
     # Get parallel processes
     print('Starting {} parallel threads'.format(mp.cpu_count()))
     pool = mp.Pool(mp.cpu_count())
-    inputs = zip(traj, [masses]*len(traj), [n_leaflets]*len(traj), [bilayer]*len(traj))
+    inputs = zip(traj, [masses]*len(traj), [n_leaflets]*len(traj))
     chunksize = int(len(traj)/mp.cpu_count()) + 1
     results = pool.starmap(analyze_all, inputs, chunksize=chunksize)
 
