@@ -50,7 +50,7 @@ def main():
     parser.add_option("-c", "--conf", action="store", type="string", dest="topfile")
     parser.add_option("-o", "--output", action="store", type="string", dest="outputdir", default="./")
     parser.add_option("-n", "--nleaflets", action="store", type="int", dest="n_leaflets",  default=1)
-    (options, args) = parser.parse_args()
+    (options, _) = parser.parse_args()
 
     trajfile = options.trajfile
     topfile  = options.topfile
