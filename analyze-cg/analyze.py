@@ -6,7 +6,7 @@ from xml.etree import cElementTree as ET
 import numpy as np
 import scipy.stats as stats
 import mdtraj as md
-import analysis.utils
+import analysis
 from analysis.molecules import molecule
 
 ## TO USE THIS SCRIPT ##
@@ -40,7 +40,7 @@ def analyze_all(frame, masses, n_leaflets):
 
     # Calculate the height -- uses the "head" atoms specified below
     atomselection = 'name mhead2 oh1 oh2 oh3 oh4 oh5 amide chead head'
-    height = analysis.utils.calc_height(frame, atomselection,int(n_leaflets/2+1), masses)
+    height = analysis.density.calc_height(frame, atomselection, int(n_leaflets/2+1), masses)
     return [np.array(tilt), np.mean(s2), apl, np.array(height)]
 
 def main():
