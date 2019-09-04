@@ -102,3 +102,6 @@ class Frame(object):
         assert self._masses.shape[0] == self._atomnames.shape[0]
         assert self._unitcell_lengths.shape[0] == 3
         assert type(self._n_leaflets) == int
+    
+    def select(self, names):
+        return np.array([index for index, atom in enumerate(self._atomnames) if atom in set(names)])
