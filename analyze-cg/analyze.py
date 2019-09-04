@@ -7,27 +7,27 @@ import numpy as np
 import scipy.stats as stats
 import mdtraj as md
 import analysis
+from analysis.frame import Frame
 from analysis.molecules import molecule
+import copy as cp
 
 ## TO USE THIS SCRIPT ##
 # python analyze.py {trajectory_file} {topology_file} {output_directory} {N_leaflets} 
 
 
-def analyze_all(frame, masses, n_leaflets):
-    # Prints phase to terminal for each frame. Can be piped to a file and used to
+def analyze_all(frame):
+    # Prints frame number to terminal for each frame. Can be piped to a file and used to
     # track progress
     print('imaframe')
 
-    # Gets the residue Topologies
-    residues = [residue for residue in frame.top.residues]
-
-    # Sanitize inputs
-    masses = np.array(masses)
-
     # Note: if you want to calculate properties for a particular layer, slice it
     # out prior to running this function
+
+    # Unpack inputs
+    frame.validate_frame()
+    
     # Calculates directors for a given set of residues
-    directors = analysis.utils.calc_all_directors(frame, masses, residues)
+    directors = analysis.utils.calc_all_directors(frame.xyz, frame.masses, frame.residuelist)
 
     # Calculate Tilt Angles
     tilt = analysis.utils.calc_tilt_angle(directors)
@@ -36,12 +36,16 @@ def analyze_all(frame, masses, n_leaflets):
     s2 = analysis.utils.calc_order_parameter(directors)
 
     # Calculate Area per Lipid: cross section / n_lipids
-    apl = frame.unitcell_lengths[-1, 0] * frame.unitcell_lengths[-1, 1] / len(residues) * n_leaflets
+    apl = frame.unitcell_lengths[0] * frame.unitcell_lengths[1] / len(frame.residuelist) * frame.n_leaflets
 
     # Calculate the height -- uses the "head" atoms specified below
     atomselection = 'name mhead2 oh1 oh2 oh3 oh4 oh5 amide chead head'
-    height = analysis.density.calc_height(frame, atomselection, int(n_leaflets/2+1), masses)
-    return [np.array(tilt), np.mean(s2), apl, np.array(height)]
+    height = analysis.density.calc_height(frame.xyz, atomselection, int(frame.n_leaflets/2+1), frame.masses)
+    results = {'tilt' :  np.array(tilt),
+                's2' : s2,
+                'apl' : apl,
+                'height' : np.array(height)}
+    return results
 
 def main():
     ## PARSING INPUTS
@@ -105,13 +109,24 @@ def main():
     traj = traj.atom_slice(selected_atoms)
     masses = masses.take(selected_atoms)
     '''
+    # Convert to Frame/residuelist format
+    residuelist = cp.deepcopy(analysis.load.to_residuelist(traj.top))
+    frames = []
+    for i in range(n_frames):
+        frame = Frame(xyz=np.squeeze(traj.xyz[i,:,:]),
+                unitcell_lengths=np.squeeze(traj.unitcell_lengths[i,:]),
+                masses=masses, residuelist=residuelist, 
+                n_leaflets=n_leaflets)
+        frames.append(cp.deepcopy(frame))
+    
+    # Purge the old trajectory from memory
+    del traj
 
     # Get parallel processes
     print('Starting {} parallel threads'.format(mp.cpu_count()))
     pool = mp.Pool(mp.cpu_count())
-    inputs = zip(traj, [masses]*len(traj), [n_leaflets]*len(traj))
-    chunksize = int(len(traj)/mp.cpu_count()) + 1
-    results = pool.starmap(analyze_all, inputs, chunksize=chunksize)
+    chunksize = int(len(frames)/mp.cpu_count()) + 1
+    results = pool.starmap(analyze_all, frames, chunksize=chunksize)
 
     print('Cleaning up results')
     results = np.array(results)
