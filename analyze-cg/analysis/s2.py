@@ -41,5 +41,5 @@ def calc_s2(q):
     float
     """
 
-    w, v = np.linalg.eig(q)
+    w, _ = np.linalg.eig(q)
     return max(w)
