@@ -41,6 +41,6 @@ def calc_direction_vector(coord1, coord2):
     """
 
     vector = np.array(coord2)-np.array(coord1)
-    magnitude = np.linalg.norm(axis=1)
+    magnitude = np.linalg.norm(vector, axis=1)
     vector = vector/magnitude[:,np.newaxis]
     return vector

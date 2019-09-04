@@ -2,12 +2,10 @@ import mdtraj as md
 import numpy as np
 
 # imports all python files
-from .molecules import *
-from .angles import *
-from .directors import *
-from .s2 import *
-from .height import *
-from .load import *
+from .molecules import molecule
+from .angles import calc_angle
+from .directors import calc_com, calc_moi, calc_director
+from .s2 import calc_q, calc_s2
 
 def calc_all_directors(frame, masses, residues):
     """ Calculates directors for all residues in a frame. This is
@@ -51,8 +49,7 @@ def calc_all_directors(frame, masses, residues):
         com = calc_com(res_coords, res_mass)
         centered_coords = res_coords - com
         moi = calc_moi(centered_coords, res_mass)
-        w, v = np.linalg.eig(moi)
-        director = v[:,np.argmin(w)]
+        director = calc_director(moi)
         return director
 
     directors = [tail_worker(residue, atom_indices) for residue in r for atom_indices in molecule[residue.name][1]]

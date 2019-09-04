@@ -1,7 +1,4 @@
-import mdtraj as md
 import numpy as np
-import matplotlib.pyplot as plt
-import xml.etree.ElementTree as ET
 
 global molecule
 molecule = {'ucer2':(9, [np.arange(8), np.arange(10, 15)], 17),
