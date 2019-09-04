@@ -74,10 +74,22 @@ class Frame(object):
         self.n_leaflets = n_leaflets
     
     def validate_frame(self):
+    """ Ensure that this frame can be analyzed.
+    Verifies that the number of coordinates, masses, and residues match
+    and that the dimensions/type of unitcell lengths and n_leaflets are
+    the correct.
+
+    Notes
+    -----
+    Raises an assertion error in the case that there is a mismatch in
+    dimensions/types
+
+    """
         self.masses = np.array(self.masses)
         self.unitcell_lengths = np.array(self.unitcell_lengths)
         self.xyz = np.array(self.xyz)
 
-        assert self.masses.shape[0] == self.unitcell_lengths.shape[0]
-        assert self.unitcell_lengths.shape[0] == self.xyz.shape[0]
+        assert self.masses.shape[0] == self.xyz.shape[0]
         assert self.xyz.shape[0] == len(self.residuelist)
+        assert self.unitcell_lengths.shape[0] == 3
+        assert type(self.n_leaflets) == int
