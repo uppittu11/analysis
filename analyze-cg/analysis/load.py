@@ -77,7 +77,7 @@ def to_residuelist(topology):
     """
     assert type(topology) == md.Topology
     residuelist = []
-    for residue in topology:
+    for residue in topology.residues:
         if not _is_lipid(residue.name):
             continue
         res_idx = topology.select('residue {}'.format(residue.index))
