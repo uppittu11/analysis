@@ -13,3 +13,4 @@
 # ignore cached stuff
 *.pyc
 *__pycache__*
+*ipynb_checkpoints*
