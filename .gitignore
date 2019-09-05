@@ -4,3 +4,4 @@
 *.gro
 *.hoomdxml
 *traj.p
+.vscode*
