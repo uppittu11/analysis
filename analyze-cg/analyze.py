@@ -39,8 +39,8 @@ def analyze_all(frame):
     apl = frame.unitcell_lengths[0] * frame.unitcell_lengths[1] / len(frame.residuelist) * frame.n_leaflets
 
     # Calculate the height -- uses the "head" atoms specified below
-    atomselection = 'name mhead2 oh1 oh2 oh3 oh4 oh5 amide chead head'
-    height = analysis.density.calc_height(frame.xyz, atomselection, int(frame.n_leaflets/2+1), frame.masses)
+    atomselection = "mhead2 oh1 oh2 oh3 oh4 oh5 amide chead head".split(' ')
+    height = analysis.height.calc_height(frame, atomselection)
     results = {'tilt' :  np.array(tilt),
                 's2' : s2,
                 'apl' : apl,
@@ -53,7 +53,7 @@ def main():
     parser.add_option("-f", "--file", action="store", type="string", dest="trajfile")
     parser.add_option("-c", "--conf", action="store", type="string", dest="topfile")
     parser.add_option("-o", "--output", action="store", type="string", dest="outputdir", default="./")
-    parser.add_option("-n", "--nleaflets", action="store", type="int", dest="n_leaflets",  default=1)
+    parser.add_option("-n", "--nleaflets", action="store", type="int", dest="n_leaflets",  default=2)
     (options, _) = parser.parse_args()
 
     trajfile = options.trajfile
@@ -64,8 +64,9 @@ def main():
     ## LOADING TRAJECTORIES
     # If previous traj exists:
     try:
-        traj = md.load('{}/traj.h5'.format(outputdir))
-        print("Loading trajectory from {}/traj.h5".format(outputdir))
+        with open('{}/frames.p'.format(outputdir), 'rb') as f:
+            frames = pickle.load(f)
+        print("Loading trajectory from {}/frames.p".format(outputdir))
 
     # If previous traj isn't there load the files inputted via
     # command line
@@ -81,56 +82,59 @@ def main():
         select_atoms = traj.top.select("not name water")
         traj.atom_slice(select_atoms, inplace=True)
 
+        # Get masses from hoomdxml
+        tree = ET.parse(topfile)
+        root = tree.getroot()
+        masses = np.fromstring(root[0].find('mass').text, sep='\n')
+        masses = masses.take(select_atoms)
+        print('Loaded masses')
+
         # Load system information
         traj = analysis.load.get_standard_topology(traj)
 
-        traj.save('{}/traj.h5'.format(outputdir))
+        # Extract atoms within a specified z range
+        '''
+        z_max = 4.0
+        z_min = 3.2
+        selected_atoms = [[atom.index for atom in residue.atoms]
+                for residue in traj.top.residues
+                if residue.name in molecule
+                and z_min < np.mean(traj.xyz[:,residue.atom(molecule[residue.name][0]).index,2]) < z_max]
+        selected_atoms = [atom for residue in selected_atoms for atom in residue]
+        selected_atoms = np.array(selected_atoms)
+        traj = traj.atom_slice(selected_atoms)
+        masses = masses.take(selected_atoms)
+        '''
+
+        # Convert to Frame/residuelist format
+        residuelist = cp.deepcopy(analysis.load.to_residuelist(traj.top))
+        atomnames = [atom.name for atom in traj.top.atoms]
+        frames = []
+        for i in range(traj.n_frames):
+            frame = Frame(xyz=np.squeeze(traj.xyz[i,:,:]),
+                    unitcell_lengths=np.squeeze(traj.unitcell_lengths[i,:]),
+                    masses=masses, residuelist=residuelist, 
+                    atomnames=atomnames, n_leaflets=n_leaflets)
+            frames.append([cp.deepcopy(frame)])
+        print('Created frame list')
+        print(frames)
+
+        # Purge the old trajectory from memory
+        print(traj.xyz.shape)
+        del traj
+
+        with open('{}/frames.p'.format(outputdir), 'wb') as f:
+            pickle.dump(frames, f)
 
     # Get number of frames
-    n_frames = traj.n_frames
+    n_frames = len(frames)
     print('Loaded trajectory with {} frames'.format(n_frames))
-
-    # Get masses from hoomdxml
-    tree = ET.parse(topfile)
-    root = tree.getroot()
-    masses = np.fromstring(root[0].find('mass').text, sep='\n')
-    print('Loaded masses')
-
-    # Extract atoms within a specified z range
-    '''
-    z_max = 4.0
-    z_min = 3.2
-    selected_atoms = [[atom.index for atom in residue.atoms]
-            for residue in traj.top.residues
-            if residue.name in molecule
-            and z_min < np.mean(traj.xyz[:,residue.atom(molecule[residue.name][0]).index,2]) < z_max]
-    selected_atoms = [atom for residue in selected_atoms for atom in residue]
-    selected_atoms = np.array(selected_atoms)
-    traj = traj.atom_slice(selected_atoms)
-    masses = masses.take(selected_atoms)
-    '''
-    # Convert to Frame/residuelist format
-    residuelist = cp.deepcopy(analysis.load.to_residuelist(traj.top))
-    frames = []
-    for i in range(n_frames):
-        frame = Frame(xyz=np.squeeze(traj.xyz[i,:,:]),
-                unitcell_lengths=np.squeeze(traj.unitcell_lengths[i,:]),
-                masses=masses, residuelist=residuelist, 
-                n_leaflets=n_leaflets)
-        frames.append(cp.deepcopy(frame))
-    
-    # Purge the old trajectory from memory
-    del traj
 
     # Get parallel processes
     print('Starting {} parallel threads'.format(mp.cpu_count()))
     pool = mp.Pool(mp.cpu_count())
     chunksize = int(len(frames)/mp.cpu_count()) + 1
     results = pool.starmap(analyze_all, frames, chunksize=chunksize)
-
-    print('Cleaning up results')
-    results = np.array(results)
-
 
     # Dump pickle file of results
     with open('{}/results.p'.format(outputdir), 'wb') as f:
