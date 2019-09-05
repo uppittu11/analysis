@@ -3,5 +3,12 @@
 *.dcd
 *.gro
 *.hoomdxml
+
+# ignore pickles
 *.p
+
+# ignore vscode stuff
 .vscode*
+
+# ignore cached stuff
+*.pyc
