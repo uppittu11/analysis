@@ -12,3 +12,4 @@
 
 # ignore cached stuff
 *.pyc
+*__pycache__*
