@@ -3,5 +3,5 @@
 *.dcd
 *.gro
 *.hoomdxml
-*traj.p
+*.p
 .vscode*
