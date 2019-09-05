@@ -1,0 +1,16 @@
+Loading trajectory from example/data//traj.h5
+Loaded trajectory with 10 frames
+Loaded masses
+Starting 8 parallel threads
+Cleaning up results
+Finished!
+imaframe
+imaframe
+imaframe
+imaframe
+imaframe
+imaframe
+imaframe
+imaframe
+imaframe
+imaframe

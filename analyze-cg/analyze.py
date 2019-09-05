@@ -12,7 +12,7 @@ from analysis.molecules import molecule
 import copy as cp
 
 ## TO USE THIS SCRIPT ##
-# python analyze.py {trajectory_file} {topology_file} {output_directory} {N_leaflets} 
+# python analyze.py {trajectory_file} {topology_file} {output_directory} {N_leaflets}
 
 
 def analyze_all(frame):
@@ -25,7 +25,7 @@ def analyze_all(frame):
 
     # Unpack inputs
     frame.validate_frame()
-    
+
     # Calculates directors for a given set of residues
     directors = analysis.utils.calc_all_directors(frame.xyz, frame.masses, frame.residuelist)
 
@@ -113,7 +113,7 @@ def main():
         for i in range(traj.n_frames):
             frame = Frame(xyz=np.squeeze(traj.xyz[i,:,:]),
                     unitcell_lengths=np.squeeze(traj.unitcell_lengths[i,:]),
-                    masses=masses, residuelist=residuelist, 
+                    masses=masses, residuelist=residuelist,
                     atomnames=atomnames, n_leaflets=n_leaflets)
             frames.append([cp.deepcopy(frame)])
         print('Created frame list')
