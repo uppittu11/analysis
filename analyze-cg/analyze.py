@@ -117,10 +117,8 @@ def main():
                     atomnames=atomnames, n_leaflets=n_leaflets)
             frames.append([cp.deepcopy(frame)])
         print('Created frame list')
-        print(frames)
 
         # Purge the old trajectory from memory
-        print(traj.xyz.shape)
         del traj
 
         with open('{}/frames.p'.format(outputdir), 'wb') as f:
