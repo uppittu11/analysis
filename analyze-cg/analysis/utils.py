@@ -2,7 +2,6 @@ import mdtraj as md
 import numpy as np
 
 # imports all python files
-from .molecules import molecule
 from .angles import calc_angle
 from .directors import calc_com, calc_moi, calc_director
 from .s2 import calc_q, calc_s2

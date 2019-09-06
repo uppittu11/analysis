@@ -1,6 +1,5 @@
 import mdtraj as md
 import numpy as np
-from .molecules import molecule
 from .smoothing import savitzky_golay
 from scipy.signal import find_peaks
 

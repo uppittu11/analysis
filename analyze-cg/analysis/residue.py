@@ -1,5 +1,4 @@
 import numpy as np
-from .molecules import molecule
 
 class Residue(object):
     """

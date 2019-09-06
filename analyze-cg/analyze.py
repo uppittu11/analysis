@@ -2,13 +2,12 @@ import multiprocessing as mp
 import pickle
 import sys
 from optparse import OptionParser
-from xml.etree import cElementTree as ET
 import numpy as np
 import scipy.stats as stats
 import mdtraj as md
 import analysis
 from analysis.frame import Frame
-from analysis.molecules import molecule
+from analysis.molecules import collect_molecules
 import copy as cp
 
 def analyze_all(frame):
@@ -56,14 +55,18 @@ def main():
                         dest="topfile")
     parser.add_option("-o", "--output", action="store", type="string", 
                         dest="outputdir", default="./")
-    parser.add_option("-n", "--nleaflets", action="store", type="int", 
+    parser.add_option("-n", "--nleaflets", action="store", type="int",
                         dest="n_leaflets",  default=2)
+    parser.add_option("--cg", action="store_true", dest="cg", 
+                        default=False)
     (options, _) = parser.parse_args()
 
     trajfile = options.trajfile
     topfile  = options.topfile
     outputdir = options.outputdir
     n_leaflets = options.n_leaflets
+    cg = options.cg
+    molecule = collect_molecules(cg)
 
     ## LOADING TRAJECTORIES
     # If previous traj exists:
@@ -84,18 +87,21 @@ def main():
             print("Loading trajectory from {}".format(trajfile))
 
         # keep only the lipids
-        select_atoms = traj.top.select("not name water")
-        traj.atom_slice(select_atoms, inplace=True)
+        sel_atoms = traj.top.select("not name water " +
+                                              "tip3p" +
+                                              "HOH" +
+                                              "SOL")
+        traj.atom_slice(sel_atoms, inplace=True)
 
         # Get masses from hoomdxml
-        tree = ET.parse(topfile)
-        root = tree.getroot()
-        masses = np.fromstring(root[0].find('mass').text, sep='\n')
-        masses = masses.take(select_atoms)
+        if cg:
+            masses = analysis.load.load_masses(cg, topfile=topfile)
+        else:
+            masses = analysis.load.load_masses(cg, topology=traj.top)
         print('Loaded masses')
 
         # Load system information
-        traj = analysis.load.get_standard_topology(traj)
+        traj = analysis.load.get_standard_topology(traj, cg)
 
         # Extract atoms within a specified z range
         z_max = 4.0
@@ -108,11 +114,11 @@ def main():
                             np.mean(traj.xyz[:,fxn(residue),2]) < 
                             z_max]
         sel_atoms = np.array(sel_atoms)
-        traj = traj.atom_slice(sel_atoms)
+        traj.atom_slice(sel_atoms, inplace=True)
         masses = masses.take(sel_atoms)
 
         # Convert to Frame/residuelist format
-        residuelist = analysis.load.to_residuelist(traj.top)
+        residuelist = analysis.load.to_residuelist(traj.top, cg)
         residuelist = cp.deepcopy(residuelist)
         atomnames = [atom.name for atom in traj.top.atoms]
         frames = []
@@ -121,7 +127,8 @@ def main():
                     unitcell_lengths=np.squeeze(
                             traj.unitcell_lengths[i,:]),
                     masses=masses, residuelist=residuelist,
-                    atomnames=atomnames, n_leaflets=n_leaflets)
+                    atomnames=atomnames, n_leaflets=n_leaflets,
+                    cg=cg)
             frames.append([cp.deepcopy(frame)])
         print('Created frame list')
 

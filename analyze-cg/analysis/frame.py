@@ -22,13 +22,16 @@ class Frame(object):
 
     """
 
-    def __init__(self, xyz=[], unitcell_lengths=[], masses=[], residuelist=[], atomnames=[], n_leaflets=2):
+    def __init__(self, xyz=[], unitcell_lengths=[], masses=[], 
+                    residuelist=[], atomnames=[], n_leaflets=2,
+                    cg=False):
         self._xyz = xyz
         self._unitcell_lengths = unitcell_lengths
         self._masses = masses
         self._residuelist = residuelist
         self._n_leaflets = n_leaflets
         self._atomnames = atomnames
+        self._cg = cg
 
     @property
     def xyz(self):
@@ -79,19 +82,28 @@ class Frame(object):
         n_leaflets == int(n_leaflets)
         self._n_leaflets = n_leaflets
     
+    @property
+    def cg(self):
+        return self._cg
+    
+    @cg.setter
+    def cg(self, cg):
+        self._cg = cg
+
     def __repr__(self):
-        return "Frame with {} residues and {} atoms".format(len(self._residuelist), len(self.masses))
+        return "<Frame with {} residues and {} atoms>".format(
+                    len(self._residuelist), len(self.masses))
     
     def validate_frame(self):
         """ Ensure that this frame can be analyzed.
-        Verifies that the number of coordinates, masses, and residues match
-        and that the dimensions/type of unitcell lengths and n_leaflets are
-        the correct.
+        Verifies that the number of coordinates, masses, and residues 
+        match and that the dimensions/type of unitcell lengths and 
+        n_leaflets are the correct.
 
         Notes
         -----
-        Raises an assertion error in the case that there is a mismatch in
-        dimensions/types
+        Raises an assertion error in the case that there is a mismatch
+        in dimensions/types
         """
         self._masses = np.array(self._masses)
         self._unitcell_lengths = np.array(self._unitcell_lengths)
@@ -104,4 +116,6 @@ class Frame(object):
         assert type(self._n_leaflets) == int
     
     def select(self, names):
-        return np.array([index for index, atom in enumerate(self._atomnames) if atom in set(names)])
+        return np.array([index for index, atom in 
+                            enumerate(self._atomnames) if 
+                            atom in set(names)])
