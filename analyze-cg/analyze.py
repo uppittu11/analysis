@@ -1,7 +1,7 @@
 import multiprocessing as mp
 import pickle
 import sys
-from optparse import OptionParser
+from argparse import ArgumentParser
 import numpy as np
 import scipy.stats as stats
 import mdtraj as md
@@ -48,23 +48,20 @@ def analyze_all(frame):
 
 def main():
     ## PARSING INPUTS
-    parser = OptionParser()
-    parser.add_option("-f", "--file", action="store", type="string", 
-                        dest="trajfile")
-    parser.add_option("-c", "--conf", action="store", type="string", 
-                        dest="topfile")
-    parser.add_option("-o", "--output", action="store", type="string", 
-                        dest="outputdir", default="./")
-    parser.add_option("-n", "--nleaflets", action="store", type="int",
-                        dest="n_leaflets",  default=2)
-    parser.add_option("--cg", action="store_true", dest="cg", 
-                        default=False)
-    (options, _) = parser.parse_args()
+    parser = ArgumentParser()
+    parser.add_argument("-f", "--file", action="store", type=str)
+    parser.add_argument("-c", "--conf", action="store", type=str)
+    parser.add_argument("-o", "--output", action="store", 
+                        type=str, default="./")
+    parser.add_argument("-n", "--nleaflets", action="store", 
+                        type=int, default=2)
+    parser.add_argument("--cg", action="store_true", default=False)
+    options = parser.parse_args()
 
-    trajfile = options.trajfile
-    topfile  = options.topfile
-    outputdir = options.outputdir
-    n_leaflets = options.n_leaflets
+    trajfile = options.file
+    topfile  = options.conf
+    outputdir = options.output
+    n_leaflets = options.nleaflets
     cg = options.cg
     molecule = collect_molecules(cg)
 
