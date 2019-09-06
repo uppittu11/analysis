@@ -3,7 +3,8 @@ import numpy as np
 
 
 def savitzky_golay(y, window_size, order, deriv=0, rate=1):
-    r"""Smooth (and optionally differentiate) data with a Savitzky-Golay filter.
+    r"""Smooth (and optionally differentiate) data with a 
+    Savitzky-Golay filter.
 
     See https://scipy-cookbook.readthedocs.io/items/SavitzkyGolay.html.
 
@@ -21,7 +22,8 @@ def savitzky_golay(y, window_size, order, deriv=0, rate=1):
         the order of the polynomial used in the filtering.
         Must be less then `window_size` - 1.
     deriv: int
-        the order of the derivative to compute (default = 0 means only smoothing)
+        the order of the derivative to compute (default = 0 means only 
+        smoothing)
     Returns
     -------
     ys : ndarray, shape (N)
@@ -46,27 +48,31 @@ def savitzky_golay(y, window_size, order, deriv=0, rate=1):
     plt.show()
     References
     ----------
-    .. [1] A. Savitzky, M. J. E. Golay, Smoothing and Differentiation of
-       Data by Simplified Least Squares Procedures. Analytical
+    .. [1] A. Savitzky, M. J. E. Golay, Smoothing and Differentiation 
+       of Data by Simplified Least Squares Procedures. Analytical
        Chemistry, 1964, 36 (8), pp 1627-1639.
-    .. [2] Numerical Recipes 3rd Edition: The Art of Scientific Computing
-       W.H. Press, S.A. Teukolsky, W.T. Vetterling, B.P. Flannery
-       Cambridge University Press ISBN-13: 9780521880688
+    .. [2] Numerical Recipes 3rd Edition: The Art of Scientific 
+       Computing W.H. Press, S.A. Teukolsky, W.T. Vetterling, B.P. 
+       Flannery Cambridge University Press ISBN-13: 9780521880688
     """
 
     try:
         window_size = np.abs(np.int(window_size))
         order = np.abs(np.int(order))
     except ValueError:
-        raise ValueError("window_size and order have to be of type int")
+        raise ValueError("window_size and order have to be of type " +
+                            "int")
     if window_size % 2 != 1 or window_size < 1:
-        raise TypeError("window_size size must be a positive odd number")
+        raise TypeError("window_size size must be a positive odd " +
+                            "number")
     if window_size < order + 2:
-        raise TypeError("window_size is too small for the polynomials order")
+        raise TypeError("window_size is too small for the " + 
+                            "polynomials order")
     order_range = range(order+1)
     half_window = (window_size -1) // 2
     # precompute coefficients
-    b = np.mat([[k**i for i in order_range] for k in range(-half_window, half_window+1)])
+    b = np.mat([[k**i for i in order_range] for k in 
+                    range(-half_window, half_window+1)])
     m = np.linalg.pinv(b).A[deriv] * rate**deriv * factorial(deriv)
     # pad the signal at the extremes with
     # values taken from the signal itself

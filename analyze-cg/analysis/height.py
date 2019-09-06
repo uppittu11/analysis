@@ -51,15 +51,18 @@ def calc_peaks(frame, atomselection, window=41):
 
     # Warns if there is an unequal number of peaks and layers
     if len(peaks) != n_layers:
-        print("There is an unequal number of " + 
-                "peaks ({}) and layers ({})".format(len(peaks), n_layers))
+        print("There is an unequal number of peaks " + 
+                "({}) and layers ({})".format(len(peaks), n_layers))
         # remove the last few peaks if there are too many
         if len(peaks) > n_layers:
             peaks = peaks[:n_layers]
         # adds peaks via linear interpolation if there are too few
         else:
             for _ in range(n_layers-len(peaks)):
-                peaks.append(2*peaks[-1]-peaks[-2])
+                try:
+                    np.append(peaks, 2*peaks[-1]-peaks[-2])
+                except IndexError:
+                    np.append(peaks, peaks[-1])
 
     return peaks
 

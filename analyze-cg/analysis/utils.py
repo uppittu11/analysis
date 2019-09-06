@@ -49,8 +49,10 @@ def calc_all_directors(xyz, masses, residues):
         director = calc_director(moi)
         return director
 
-    tail_idxs = [tail for residue in residues for tail in residue.tails]
-    directors = [tail_worker(atom_indices) for atom_indices in tail_idxs]
+    tail_idxs = [tail for residue in residues 
+                    for tail in residue.tails]
+    directors = [tail_worker(atom_indices) 
+                    for atom_indices in tail_idxs]
     directors = np.array(directors)
     return directors
 

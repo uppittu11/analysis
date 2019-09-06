@@ -20,7 +20,9 @@ def calc_q(directors):
 
     directors = np.array(directors)
     Q = np.zeros((3, 3))
-    Q = np.array([[np.sum(directors[:,i]*directors[:,j]*3) for j in range(3)] for i in range(3)])
+    Q = np.array([[np.sum(directors[:,i]*directors[:,j]*3) 
+                    for j in range(3)] 
+                    for i in range(3)])
     diag = np.array([len(directors)]*3)
     diag = np.diag(diag)
     Q = Q - diag
