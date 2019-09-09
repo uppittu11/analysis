@@ -5,13 +5,13 @@ from argparse import ArgumentParser
 import numpy as np
 import scipy.stats as stats
 import mdtraj as md
-import analysis
-from analysis.frame import Frame
-from analysis.molecules import collect_molecules
+import analysis.analysis as analysis
+from analysis.analysis.frame import Frame
+from analysis.analysis.molecules import collect_molecules
 import copy as cp
 
 def analyze_all(frame):
-    # Prints frame number to terminal for each frame. 
+    # Prints frame number to terminal for each frame.
     # Can be piped to a file and used to track progress
     print('imaframe')
 
@@ -22,8 +22,8 @@ def analyze_all(frame):
     frame.validate_frame()
 
     # Calculates directors for a given set of residues
-    directors = analysis.utils.calc_all_directors(frame.xyz, 
-                                                    frame.masses, 
+    directors = analysis.utils.calc_all_directors(frame.xyz,
+                                                    frame.masses,
                                                     frame.residuelist)
 
     # Calculate Tilt Angles
@@ -58,9 +58,9 @@ def main():
     parser.add_argument("-f", "--file", action="store", type=str,
                         default="")
     parser.add_argument("-c", "--conf", action="store", type=str)
-    parser.add_argument("-o", "--output", action="store", 
+    parser.add_argument("-o", "--output", action="store",
                         type=str, default="./")
-    parser.add_argument("-n", "--nleaflets", action="store", 
+    parser.add_argument("-n", "--nleaflets", action="store",
                         type=int, default=2)
     parser.add_argument("--cg", action="store_true", default=False)
     parser.add_argument("--reload", action="store_true", default=False)
