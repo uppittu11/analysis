@@ -115,7 +115,16 @@ class Frame(object):
         assert self._unitcell_lengths.shape[0] == 3
         assert type(self._n_leaflets) == int
     
-    def select(self, names):
-        return np.array([index for index, atom in 
-                            enumerate(self._atomnames) if 
-                            atom in set(names)])
+    def select(self, names=None, mass_range=None):
+        if names:
+            return np.array([index for index, atom in 
+                                enumerate(self._atomnames) if 
+                                atom in set(names)])
+        elif mass_range:
+            mass_range = np.array(mass_range)
+            assert mass_range.shape[-1] == 2
+            return np.array([index for index, mass in 
+                                enumerate(self.masses) if
+                                mass_range[0] < 
+                                mass
+                                < mass_range[1]])

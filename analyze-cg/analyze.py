@@ -37,9 +37,15 @@ def analyze_all(frame):
             len(frame.residuelist) * frame.n_leaflets)
 
     # Calculate the height -- uses the "head" atoms specified below
-    atomselection = "mhead2 oh1 oh2 oh3 oh4 oh5 amide chead head"
-    atomselection = atomselection.split(' ')
-    height = analysis.height.calc_height(frame, atomselection)
+    if frame.cg:
+        atomselection = "mhead2 oh1 oh2 oh3 oh4 oh5 amide chead head"
+        atomselection = atomselection.split(' ')
+        atoms = frame.select(names=atomselection)
+    else:
+        atomselection = [13.0, 100.0]
+        atoms = frame.select(mass_range=atomselection)
+    height = analysis.height.calc_height(frame, atoms)
+
     results = {'tilt' :  np.array(tilt),
                 's2' : s2,
                 'apl' : apl,
@@ -49,13 +55,19 @@ def analyze_all(frame):
 def main():
     ## PARSING INPUTS
     parser = ArgumentParser()
-    parser.add_argument("-f", "--file", action="store", type=str)
+    parser.add_argument("-f", "--file", action="store", type=str,
+                        default="")
     parser.add_argument("-c", "--conf", action="store", type=str)
     parser.add_argument("-o", "--output", action="store", 
                         type=str, default="./")
     parser.add_argument("-n", "--nleaflets", action="store", 
                         type=int, default=2)
     parser.add_argument("--cg", action="store_true", default=False)
+    parser.add_argument("--reload", action="store_true", default=False)
+    parser.add_argument("--min", action="store", type=float,
+                        default=None)
+    parser.add_argument("--max", action="store", type=float,
+                        default=None)
     options = parser.parse_args()
 
     trajfile = options.file
@@ -63,32 +75,23 @@ def main():
     outputdir = options.output
     n_leaflets = options.nleaflets
     cg = options.cg
-    molecule = collect_molecules(cg)
+    reload_traj = options.reload
+    z_min = options.min
+    z_max = options.max
 
     ## LOADING TRAJECTORIES
-    # If previous traj exists:
+    # If cached traj exists:
     try:
-        with open('{}/frames.p'.format(outputdir), 'rb') as f:
-            frames = pickle.load(f)
-        print("Loading trajectory from {}/frames.p".format(outputdir))
+        if reload_traj:
+            raise ValueError("Ignoring cached trajectory (--reload)")
+        frames = analysis.load.load_from_pickle(
+                    '{}/frames.p'.format(outputdir))
 
     # If previous traj isn't there load the files inputted via
     # command line
     except:
-        try:
-            traj = md.load(trajfile, top=topfile)
-            print("Loading trajectory from {} ".format(trajfile) +
-                    "and topology from {}".format(topfile))
-        except:
-            traj = md.load(trajfile)
-            print("Loading trajectory from {}".format(trajfile))
-
-        # keep only the lipids
-        sel_atoms = traj.top.select("not name water " +
-                                              "tip3p" +
-                                              "HOH" +
-                                              "SOL")
-        traj.atom_slice(sel_atoms, inplace=True)
+        traj = analysis.load.load_from_trajectory(
+                    trajfile, topfile)
 
         # Get masses from hoomdxml
         if cg:
@@ -97,22 +100,20 @@ def main():
             masses = analysis.load.load_masses(cg, topology=traj.top)
         print('Loaded masses')
 
+        # keep only the lipids
+        sel_atoms = traj.top.select("(not name water) and " +
+                                        "(not resname tip3p " +
+                                        "HOH SOL)")
+        traj.atom_slice(sel_atoms, inplace=True)
+        masses = masses.take(sel_atoms)
+
         # Load system information
         traj = analysis.load.get_standard_topology(traj, cg)
 
         # Extract atoms within a specified z range
-        z_max = 4.0
-        z_min = 3.2
-        fxn = lambda res : res.atom(molecule[res.name][0]).index
-        sel_atoms = [atom.index for residue in traj.top.residues
-                            for atom in residue.atoms
-                            if residue.name in molecule
-                            and z_min < 
-                            np.mean(traj.xyz[:,fxn(residue),2]) < 
-                            z_max]
-        sel_atoms = np.array(sel_atoms)
-        traj.atom_slice(sel_atoms, inplace=True)
-        masses = masses.take(sel_atoms)
+        if (z_min or z_max):
+            traj, masses = analysis.load.extract_range(
+                            traj, masses, cg, z_min, z_max)
 
         # Convert to Frame/residuelist format
         residuelist = analysis.load.to_residuelist(traj.top, cg)
@@ -132,6 +133,7 @@ def main():
         # Purge the old trajectory from memory
         del traj
 
+        # Save a cached version of the frames list
         with open('{}/frames.p'.format(outputdir), 'wb') as f:
             pickle.dump(frames, f)
 
