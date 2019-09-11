@@ -7,7 +7,7 @@ class Frame(object):
     Each frame contains the coordinates of each atom, unitcell lengths
     and the mass of each atom
 
-    Parameters
+    Attributes
     ----------
     xyz : np.ndarray, optional, default=[]
         The coordinates of each atom. N x 3 array
