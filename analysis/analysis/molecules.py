@@ -10,11 +10,13 @@ def collect_molecules(cg):
             'ucer6':(9, [np.arange(3), np.arange(10, 15)], 19),
             'ecer6':(6, [np.arange(5), np.arange(7, 12)], 16),
             'chol' :(0, [np.arange(9)], 9),
-            'ffa6' :(0, [np.arange(3)[::-1]], 3),
-            'ffa16':(0, [np.arange(6)[::-1]], 6),
-            'ffa18':(0, [np.arange(7)[::-1]], 7),
-            'ffa20':(0, [np.arange(8)[::-1]], 8),
-            'ffa22':(0, [np.arange(9)[::-1]], 9),
+            'ffa6' :(2, [np.arange(3)[::-1]], 3),
+            'ffa15':(5, [np.arange(6)[::-1]], 6),
+            'ffa16':(5, [np.arange(6)[::-1]], 6),
+            'ffa18':(6, [np.arange(7)[::-1]], 7),
+            'ffa19':(6, [np.arange(7)[::-1]], 7),
+            'ffa21':(7, [np.arange(8)[::-1]], 8),
+            'ffa22':(7, [np.arange(8)[::-1]], 8),
             'ffa24':(8, [np.arange(9)[::-1]], 9)
             }
     else:
@@ -33,5 +35,5 @@ def collect_molecules(cg):
             'ffa22':(25, [np.arange(22)[::-1]], 68),
             'ffa24':(27, [np.arange(24)[::-1]], 74)
             }
-        
+
     return molecule

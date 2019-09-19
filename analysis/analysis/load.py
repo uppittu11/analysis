@@ -23,11 +23,30 @@ def _is_lipid(resname, cg):
 
 def get_cg_residuename(residue):
     name = None
-    atoms = set([atom.name for atom in residue.atoms])
+    atoms = [atom.name for atom in residue.atoms]
     if 'chead' in atoms:
         name = 'chol'
     elif 'head' in atoms:
-        name = 'ffa24'
+        if len(atoms) == 9:
+            if 'ter2' in atoms:
+                name = 'ffa24'
+            else:
+                name = 'ffa25'
+        elif len(atoms) == 8:
+            if 'ter2' in atoms:
+                name = 'ffa21'
+            else:
+                name = 'ffa22'
+        elif len(atoms) == 7:
+            if 'ter2' in atoms:
+                name = 'ffa18'
+            else:
+                name = 'ffa19'
+        elif len(atoms) == 6:
+            if 'ter2' in atoms:
+                name = 'ffa15'
+            else:
+                name = 'ffa16'
     elif 'oh4' in atoms:
         if 'ter2' in atoms:
             name = 'ucer6'
@@ -46,13 +65,13 @@ def get_cg_residuename(residue):
     elif 'water' in atoms:
         name = 'water'
     if name == None:
-        raise KeyError("Residue {} ".format(residue.name) +
+        raise KeyError("Residue containing {} ".format(atoms) +
                         "is not in the database")
     return name
 
 def get_standard_topology(traj, cg):
     """ Load system information into a trajectory.
-    CG systems: Based on the number and name of CG beads in a residue, 
+    CG systems: Based on the number and name of CG beads in a residue,
     load in the correct residue name
 
     AA systems: Validate that all residue names are in the molecule
@@ -86,7 +105,7 @@ def get_standard_topology(traj, cg):
 
 def load_masses(cg, topology=None, topfile=None):
     if cg:
-        if topfile == None: 
+        if topfile == None:
             raise ValueError("topfile is a required arguement " +
                                 "if cg=True")
         print(topfile)
@@ -94,7 +113,7 @@ def load_masses(cg, topology=None, topfile=None):
         root = tree.getroot()
         masses = np.fromstring(root[0].find('mass').text, sep='\n')
     else:
-        if topology == None: 
+        if topology == None:
             raise ValueError("topology is a required arguement " +
                                 "if cg=True")
         masses = []
@@ -155,15 +174,15 @@ def load_from_trajectory(trajfile, topfile):
     return traj
 
 def extract_range(traj, masses, cg, z_min=None, z_max=None):
-    molecule = collect_molecules(cg) 
+    molecule = collect_molecules(cg)
     assert (z_min or z_max)
     if z_min and z_max:
         fxn = lambda res : res.atom(molecule[res.name][0]).index
         sel_atoms = [atom.index for residue in traj.top.residues
                             for atom in residue.atoms
                             if residue.name in molecule
-                            and z_min < 
-                            np.mean(traj.xyz[:,fxn(residue),2]) < 
+                            and z_min <
+                            np.mean(traj.xyz[:,fxn(residue),2]) <
                             z_max]
         sel_atoms = np.array(sel_atoms)
         traj.atom_slice(sel_atoms, inplace=True)
@@ -173,7 +192,7 @@ def extract_range(traj, masses, cg, z_min=None, z_max=None):
         sel_atoms = [atom.index for residue in traj.top.residues
                             for atom in residue.atoms
                             if residue.name in molecule
-                            and z_min < 
+                            and z_min <
                             np.mean(traj.xyz[:,fxn(residue),2])]
         sel_atoms = np.array(sel_atoms)
         traj.atom_slice(sel_atoms, inplace=True)
@@ -183,7 +202,7 @@ def extract_range(traj, masses, cg, z_min=None, z_max=None):
         sel_atoms = [atom.index for residue in traj.top.residues
                             for atom in residue.atoms
                             if residue.name in molecule
-                            and np.mean(traj.xyz[:,fxn(residue),2]) < 
+                            and np.mean(traj.xyz[:,fxn(residue),2]) <
                             z_max]
         sel_atoms = np.array(sel_atoms)
         traj.atom_slice(sel_atoms, inplace=True)
