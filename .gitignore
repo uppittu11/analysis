@@ -1,17 +1,21 @@
+# ignore cached stuff
+*.py[cod]
+*.ipynb_checkpoints
+*log.txt*
+
+# ignore python eggs
+*.egg
+*.egg-info
+
+# ignore vscode stuff
+.vscode
+.vscode/*
+
+# ignore pickles
+*.p
+
 # ignore all trajectory and topology files
 *.xtc
 *.dcd
 *.gro
 *.hoomdxml
-
-# ignore pickles
-*.p
-
-# ignore vscode stuff
-.vscode*
-
-# ignore cached stuff
-*.pyc
-*__pycache__*
-*ipynb_checkpoints*
-*log.txt*
