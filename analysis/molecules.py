@@ -1,5 +1,7 @@
 import numpy as np
 
+__all__ = ['collect_molecules']
+
 def collect_molecules(cg):
     if cg:
         molecule = {

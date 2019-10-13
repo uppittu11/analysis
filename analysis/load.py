@@ -5,6 +5,10 @@ from .residue import Residue
 from xml.etree import cElementTree as ET
 import pickle
 
+__all__ = ['get_cg_residuename', 'get_standard_topology',  'load_masses',
+           'to_residuelist', 'load_from_pickle', 'load_from_trajectory',
+           'extract_range']
+
 def _is_lipid(resname, cg):
     """ Determine whether a residue name is an analyzeable lipid
 
