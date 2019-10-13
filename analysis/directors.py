@@ -1,6 +1,8 @@
 import mdtraj as md
 import numpy as np
 
+__all__ = ['calc_com', 'calc_moi', 'calc_director']
+
 def calc_com(coords, masses):
     """ Calculate the center of mass of a list of coordinates
     com = mean(masses * coords)

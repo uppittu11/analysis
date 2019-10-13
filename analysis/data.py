@@ -1,6 +1,8 @@
 import numpy as np
 import pickle
 
+__all__ = ['load_results']
+
 def load_results(filename, convert_to_numpy=True, fields=None):
     with open(filename, 'rb') as f:
         results = pickle.load(f)
@@ -8,10 +10,10 @@ def load_results(filename, convert_to_numpy=True, fields=None):
         results = _to_dict(results, fields=fields)
 
     return results
-    
+
 def _to_dict(results, fields=None):
     """ Convert a results list of dicts to a dict of lists
-    Results are outputted as a list of length n_frames containing 
+    Results are outputted as a list of length n_frames containing
     dicts with keys corresponding to each result type. This function
     converts that format to a dict of numpy arrays for each result type
     in which all frames are in one data structure
@@ -33,11 +35,11 @@ def _to_dict(results, fields=None):
 
     if not(fields):
         fields = results[0].keys()
-    
+
     for field in fields:
         temp = [result[field] for result in results]
         temp = np.array(temp)
         new_results.update({field : temp})
-        
+
     return new_results
 

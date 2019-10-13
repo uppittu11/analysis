@@ -1,6 +1,7 @@
 import numpy as np
 ### This module is used to calculate things with angles
 
+__all__ = ['calc_angle', 'calc_direction_vector']
 
 def calc_angle(vec1, vec2):
     """ Calculate the angles between two lists of unit vectors
