@@ -2,9 +2,9 @@ import mdtraj as md
 import numpy as np
 
 # imports all python files
-from .angles import calc_angle
-from .directors import calc_com, calc_moi, calc_director
-from .s2 import calc_q, calc_s2
+from analysis.angles import calc_angle
+from analysis.directors import calc_com, calc_moi, calc_director
+from analysis.s2 import calc_q, calc_s2
 
 __all__ = ['calc_all_directors', 'calc_tilt_angle', 'calc_order_parameter']
 
