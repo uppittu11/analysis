@@ -1,0 +1,5 @@
+stages:
+- stage: Test
+  jobs:
+  - template: ./devtools/azure-pipelines-linux.yml
+  - template: ./devtools/azure-pipelines-macos.yml
