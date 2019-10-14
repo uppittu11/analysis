@@ -1,9 +1,10 @@
 from math import factorial
 import numpy as np
 
+__all__ = ['savitzky_golay']
 
 def savitzky_golay(y, window_size, order, deriv=0, rate=1):
-    r"""Smooth (and optionally differentiate) data with a 
+    r"""Smooth (and optionally differentiate) data with a
     Savitzky-Golay filter.
 
     See https://scipy-cookbook.readthedocs.io/items/SavitzkyGolay.html.
@@ -22,7 +23,7 @@ def savitzky_golay(y, window_size, order, deriv=0, rate=1):
         the order of the polynomial used in the filtering.
         Must be less then `window_size` - 1.
     deriv: int
-        the order of the derivative to compute (default = 0 means only 
+        the order of the derivative to compute (default = 0 means only
         smoothing)
     Returns
     -------
@@ -48,11 +49,11 @@ def savitzky_golay(y, window_size, order, deriv=0, rate=1):
     plt.show()
     References
     ----------
-    .. [1] A. Savitzky, M. J. E. Golay, Smoothing and Differentiation 
+    .. [1] A. Savitzky, M. J. E. Golay, Smoothing and Differentiation
        of Data by Simplified Least Squares Procedures. Analytical
        Chemistry, 1964, 36 (8), pp 1627-1639.
-    .. [2] Numerical Recipes 3rd Edition: The Art of Scientific 
-       Computing W.H. Press, S.A. Teukolsky, W.T. Vetterling, B.P. 
+    .. [2] Numerical Recipes 3rd Edition: The Art of Scientific
+       Computing W.H. Press, S.A. Teukolsky, W.T. Vetterling, B.P.
        Flannery Cambridge University Press ISBN-13: 9780521880688
     """
 
@@ -66,12 +67,12 @@ def savitzky_golay(y, window_size, order, deriv=0, rate=1):
         raise TypeError("window_size size must be a positive odd " +
                             "number")
     if window_size < order + 2:
-        raise TypeError("window_size is too small for the " + 
+        raise TypeError("window_size is too small for the " +
                             "polynomials order")
     order_range = range(order+1)
     half_window = (window_size -1) // 2
     # precompute coefficients
-    b = np.mat([[k**i for i in order_range] for k in 
+    b = np.mat([[k**i for i in order_range] for k in
                     range(-half_window, half_window+1)])
     m = np.linalg.pinv(b).A[deriv] * rate**deriv * factorial(deriv)
     # pad the signal at the extremes with

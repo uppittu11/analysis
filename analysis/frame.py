@@ -1,5 +1,7 @@
 import numpy as np
 
+__all__ = ['Frame']
+
 class Frame(object):
     """
     Class for a single frame
@@ -22,7 +24,7 @@ class Frame(object):
 
     """
 
-    def __init__(self, xyz=[], unitcell_lengths=[], masses=[], 
+    def __init__(self, xyz=[], unitcell_lengths=[], masses=[],
                     residuelist=[], atomnames=[], n_leaflets=2,
                     cg=False):
         self._xyz = xyz
@@ -36,11 +38,11 @@ class Frame(object):
     @property
     def xyz(self):
         return self._xyz
-    
+
     @xyz.setter
     def xyz(self, xyz):
         self._xyz = xyz
-    
+
     @property
     def unitcell_lengths(self):
         return self._unitcell_lengths
@@ -52,7 +54,7 @@ class Frame(object):
     @property
     def masses(self):
         return self._masses
-    
+
     @masses.setter
     def masses(self, masses):
         self._masses = masses
@@ -60,15 +62,15 @@ class Frame(object):
     @property
     def residuelist(self):
         return self._residuelist
-    
+
     @residuelist.setter
     def residuelist(self, residuelist):
         self._residuelist = residuelist
-    
+
     @property
     def atomnames(self):
         return self._atomnames
-    
+
     @atomnames.setter
     def atomnames(self, atomnames):
         self._atomnames = atomnames
@@ -76,16 +78,16 @@ class Frame(object):
     @property
     def n_leaflets(self):
         return self._n_leaflets
-    
+
     @n_leaflets.setter
     def n_leaflets(self, n_leaflets):
         n_leaflets == int(n_leaflets)
         self._n_leaflets = n_leaflets
-    
+
     @property
     def cg(self):
         return self._cg
-    
+
     @cg.setter
     def cg(self, cg):
         self._cg = cg
@@ -93,11 +95,11 @@ class Frame(object):
     def __repr__(self):
         return "<Frame with {} residues and {} atoms>".format(
                     len(self._residuelist), len(self.masses))
-    
+
     def validate_frame(self):
         """ Ensure that this frame can be analyzed.
-        Verifies that the number of coordinates, masses, and residues 
-        match and that the dimensions/type of unitcell lengths and 
+        Verifies that the number of coordinates, masses, and residues
+        match and that the dimensions/type of unitcell lengths and
         n_leaflets are the correct.
 
         Notes
@@ -114,17 +116,17 @@ class Frame(object):
         assert self._masses.shape[0] == self._atomnames.shape[0]
         assert self._unitcell_lengths.shape[0] == 3
         assert type(self._n_leaflets) == int
-    
+
     def select(self, names=None, mass_range=None):
         if names:
-            return np.array([index for index, atom in 
-                                enumerate(self._atomnames) if 
+            return np.array([index for index, atom in
+                                enumerate(self._atomnames) if
                                 atom in set(names)])
         elif mass_range:
             mass_range = np.array(mass_range)
             assert mass_range.shape[-1] == 2
-            return np.array([index for index, mass in 
+            return np.array([index for index, mass in
                                 enumerate(self.masses) if
-                                mass_range[0] < 
+                                mass_range[0] <
                                 mass
                                 < mass_range[1]])

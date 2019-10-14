@@ -3,13 +3,15 @@ import numpy as np
 from .smoothing import savitzky_golay
 from scipy.signal import find_peaks
 
+__all__ = ['calc_peaks', 'calc_height']
+
 def calc_peaks(frame, atoms, window=41):
     """ Calculate the locations of peaks in 1-D mass density
     Calculates a mass-weighted density histogram along the z-dimension
 
     Parameters:
     -----------
-    frame : analysis.Frame 
+    frame : analysis.Frame
         The frame to be analyzed
     atoms : list
         A list of atom indices. These are used to create the
@@ -49,7 +51,7 @@ def calc_peaks(frame, atoms, window=41):
 
     # Warns if there is an unequal number of peaks and layers
     if len(peaks) != n_layers:
-        print("There is an unequal number of peaks " + 
+        print("There is an unequal number of peaks " +
                 "({}) and layers ({})".format(len(peaks), n_layers))
         # remove the last few peaks if there are too many
         if len(peaks) > n_layers:
@@ -66,12 +68,12 @@ def calc_peaks(frame, atoms, window=41):
 
 def calc_height(frame, atoms, window=41):
     """ Calculate the height of layers in frame
-    Obtains peak locations the calc_peaks function and takes the 
+    Obtains peak locations the calc_peaks function and takes the
     difference in adjacent peak locations to get the heights.
 
     Parameters:
     -----------
-    frame : analysis.Frame 
+    frame : analysis.Frame
         The frame to be analyzed
     atoms : list
         A list of atom indices. These are used to create the
@@ -84,7 +86,7 @@ def calc_height(frame, atoms, window=41):
     height : list
         list of heights for each layer (see above for n_layers)
     """
-    
+
     peaks = calc_peaks(frame, atoms, window)
     peaks = np.sort(peaks)
     height = peaks[1:] - peaks[:-1]
