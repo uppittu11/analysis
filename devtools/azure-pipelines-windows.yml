@@ -13,21 +13,22 @@ jobs:
     maxParallel: 10
   
   steps:
-  - powershell: Write-Host "##vso[task.prependpath]$env:CONDA\Scripts"
+  - Powershell: Write-Host "##vso[task.prependpath]$env:CONDA\Scripts"
     displayName: Add conda to PATH
 
-  - powershell: |
+  - script: |
       ECHO ON
       set PYTHONUNBUFFERED=1
+      conda config --set always_yes yes --set changeps1 no
       conda config --add channels conda-forge
       conda create -n test-environment python=$(CONDA_PY) --file requirements.txt
     displayName: Create new conda environment
 
-  - powershell: |
+  - script: |
       conda run -n test-environment pip install -e .
     displayName: Installing analysis
     
-  - powershell: |
+  - script: |
       conda run -n test-environment python -m pytest -v
     displayName: Running tests
     failOnStderr: true
