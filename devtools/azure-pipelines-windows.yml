@@ -22,16 +22,16 @@ jobs:
       conda config --set always_yes yes --set changeps1 no
       conda config --add channels conda-forge
       conda create -n test-environment python=$(CONDA_PY) --file requirements.txt
-      source activate test-environment
+      activate test-environment
     displayName: Create new conda environment
 
   - script: |
-      source activate test-environment
+      activate test-environment
       pip install -e .
     displayName: Installing analysis
     
   - script: |
-      source activate test-environment
+      activate test-environment
       python -m pytest -v
     displayName: Running tests
     continueOnError: false
