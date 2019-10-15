@@ -34,5 +34,5 @@ jobs:
       activate test-environment
       python -m pytest -v
     displayName: Running tests
-    failOnStandardError: True
+    failOnStderr: true
     continueOnError: false
