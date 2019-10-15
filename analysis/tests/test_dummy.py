@@ -4,5 +4,5 @@ from analysis.tests.basetest import BaseTest
 
 class TestDummy(BaseTest):
     def test_dummy(self):
-        assert 10 == 10.0
+        assert 10 == 11.0
 
