@@ -34,7 +34,7 @@ stages:
           
         - bash: |
             source activate test-environment
-            python -m pytest -v  --cov=analysis
+            python -m pytest -v  --cov analysis --cov-report xml:./coverage.xml
             codecov --file coverage.xml --token $(CODECOV_TOKEN)
           displayName: Running tests
   
