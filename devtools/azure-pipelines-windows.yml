@@ -16,7 +16,7 @@ jobs:
   - powershell: Write-Host "##vso[task.prependpath]$env:CONDA\Scripts"
     displayName: Add conda to PATH
 
-  - script: |
+  - powershell: |
       ECHO ON
       set PYTHONUNBUFFERED=1
       conda config --set always_yes yes --set changeps1 no
@@ -25,13 +25,14 @@ jobs:
       activate test-environment
     displayName: Create new conda environment
 
-  - script: |
+  - powershell: |
       activate test-environment
       pip install -e .
     displayName: Installing analysis
     
-  - script: |
+  - powershell: |
       activate test-environment
       python -m pytest -v
     displayName: Running tests
+    failOnStandardError: True
     continueOnError: false
