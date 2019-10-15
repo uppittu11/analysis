@@ -31,5 +31,5 @@ jobs:
   - script: |
       conda run -n test-environment python -m pytest -v
     displayName: Running tests
-    failOnStderr: true
+    failOnStandardError: true
     continueOnError: false
