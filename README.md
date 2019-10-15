@@ -3,3 +3,9 @@
 [![codecov](https://codecov.io/gh/uppittu11/analysis/branch/master/graph/badge.svg)](https://codecov.io/gh/uppittu11/analysis)
 
 Analysis scripts for molecular dynamics simulations of stratum corneum lipid multilayers.
+
+Current measurements:
+- Tilt Angles
+- Bilayer/Multilayer Height
+- Nematic Order Parameter
+- Area per Lipid
