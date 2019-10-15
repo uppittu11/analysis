@@ -25,11 +25,12 @@ jobs:
     displayName: Create new conda environment
 
   - script: |
-      conda run -n test-environment pip install -e .
+      call activate test-environment
+      pip install -e .
     displayName: Installing analysis
     
   - script: |
-      conda run -n test-environment python -m pytest -v
+      call activate test-environment
+      pytest -v
     displayName: Running tests
-    failOnStandardError: true
-    continueOnError: false
+    failOnStderr: true
