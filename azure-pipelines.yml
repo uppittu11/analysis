@@ -3,3 +3,38 @@ stages:
   jobs:
   - template: ./devtools/azure-pipelines-linux.yml
   - template: ./devtools/azure-pipelines-macos.yml
+
+- stage: Coverage
+  condition: and(succeeded, eq(variables['build.sourceBranch'], 'refs/heads/master'))
+  variables:
+    CODECOV_TOKEN: "e58ad245-eaba-4cde-93ce-0e2fdac3d2e4"
+  jobs:
+    - job:
+      pool:
+        vmImage: 'ubuntu-latest'
+
+      steps:
+        - bash: echo "##vso[task.prependpath]$CONDA/bin" 
+          displayName: Add conda to path
+
+        - bash: sudo install -d -m 0777 /usr/envs
+          displayName: Fix conda permissions
+
+        - bash: |
+            conda config --set always_yes yes --set changeps1 no
+            conda config --add channels conda-forge
+            conda create -n test-environment python=3.7 --file requirements.txt
+            source activate test-environment
+          displayName: Create new conda environment
+
+        - bash: |
+            source activate test-environment
+            pip install -e .
+          displayName: Installing analysis
+          
+        - bash: |
+            source activate test-environment
+            python -m pytest -v  --cov=analysis
+            codecov --file coverage.xml --token $(CODECOV_TOKEN)
+          displayName: Running tests
+  
