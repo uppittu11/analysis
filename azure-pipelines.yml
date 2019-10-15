@@ -5,7 +5,7 @@ stages:
   - template: ./devtools/azure-pipelines-macos.yml
 
 - stage: Coverage
-  condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/master'))
+  condition: succeeded()
   jobs:
     - job:
       pool:
