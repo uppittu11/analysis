@@ -1,6 +1,7 @@
 import numpy as np
 
-__all__ = ['Residue']
+__all__ = ["Residue"]
+
 
 class Residue(object):
     """
@@ -21,7 +22,7 @@ class Residue(object):
 
     """
 
-    def __init__(self, name='RES', tails=[]):
+    def __init__(self, name="RES", tails=[]):
         self._name = name
         self._tails = tails
 

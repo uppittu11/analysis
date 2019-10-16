@@ -1,6 +1,7 @@
 import numpy as np
 
-__all__ = ['Frame']
+__all__ = ["Frame"]
+
 
 class Frame(object):
     """
@@ -24,9 +25,16 @@ class Frame(object):
 
     """
 
-    def __init__(self, xyz=[], unitcell_lengths=[], masses=[],
-                    residuelist=[], atomnames=[], n_leaflets=2,
-                    cg=False):
+    def __init__(
+        self,
+        xyz=[],
+        unitcell_lengths=[],
+        masses=[],
+        residuelist=[],
+        atomnames=[],
+        n_leaflets=2,
+        cg=False,
+    ):
         self._xyz = xyz
         self._unitcell_lengths = unitcell_lengths
         self._masses = masses
@@ -94,7 +102,8 @@ class Frame(object):
 
     def __repr__(self):
         return "<Frame with {} residues and {} atoms>".format(
-                    len(self._residuelist), len(self.masses))
+            len(self._residuelist), len(self.masses)
+        )
 
     def validate_frame(self):
         """ Ensure that this frame can be analyzed.
@@ -119,14 +128,20 @@ class Frame(object):
 
     def select(self, names=None, mass_range=None):
         if names:
-            return np.array([index for index, atom in
-                                enumerate(self._atomnames) if
-                                atom in set(names)])
+            return np.array(
+                [
+                    index
+                    for index, atom in enumerate(self._atomnames)
+                    if atom in set(names)
+                ]
+            )
         elif mass_range:
             mass_range = np.array(mass_range)
             assert mass_range.shape[-1] == 2
-            return np.array([index for index, mass in
-                                enumerate(self.masses) if
-                                mass_range[0] <
-                                mass
-                                < mass_range[1]])
+            return np.array(
+                [
+                    index
+                    for index, mass in enumerate(self.masses)
+                    if mass_range[0] < mass < mass_range[1]
+                ]
+            )

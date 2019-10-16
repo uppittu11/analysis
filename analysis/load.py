@@ -5,9 +5,16 @@ from .residue import Residue
 from xml.etree import cElementTree as ET
 import pickle
 
-__all__ = ['get_cg_residuename', 'get_standard_topology',  'load_masses',
-           'to_residuelist', 'load_from_pickle', 'load_from_trajectory',
-           'extract_range']
+__all__ = [
+    "get_cg_residuename",
+    "get_standard_topology",
+    "load_masses",
+    "to_residuelist",
+    "load_from_pickle",
+    "load_from_trajectory",
+    "extract_range",
+]
+
 
 def _is_lipid(resname, cg):
     """ Determine whether a residue name is an analyzeable lipid
@@ -23,55 +30,58 @@ def _is_lipid(resname, cg):
         True if resnam is in molecule. False otherwise
     """
     molecule = collect_molecules(cg)
-    return (resname in molecule)
+    return resname in molecule
+
 
 def get_cg_residuename(residue):
     name = None
     atoms = [atom.name for atom in residue.atoms]
-    if 'chead' in atoms:
-        name = 'chol'
-    elif 'head' in atoms:
+    if "chead" in atoms:
+        name = "chol"
+    elif "head" in atoms:
         if len(atoms) == 9:
-            if 'ter2' in atoms:
-                name = 'ffa24'
+            if "ter2" in atoms:
+                name = "ffa24"
             else:
-                name = 'ffa25'
+                name = "ffa25"
         elif len(atoms) == 8:
-            if 'ter2' in atoms:
-                name = 'ffa21'
+            if "ter2" in atoms:
+                name = "ffa21"
             else:
-                name = 'ffa22'
+                name = "ffa22"
         elif len(atoms) == 7:
-            if 'ter2' in atoms:
-                name = 'ffa18'
+            if "ter2" in atoms:
+                name = "ffa18"
             else:
-                name = 'ffa19'
+                name = "ffa19"
         elif len(atoms) == 6:
-            if 'ter2' in atoms:
-                name = 'ffa15'
+            if "ter2" in atoms:
+                name = "ffa15"
             else:
-                name = 'ffa16'
-    elif 'oh4' in atoms:
-        if 'ter2' in atoms:
-            name = 'ucer6'
+                name = "ffa16"
+    elif "oh4" in atoms:
+        if "ter2" in atoms:
+            name = "ucer6"
         else:
-            name = 'ecer6'
-    elif 'oh3' in atoms:
-        if 'ter2' in atoms:
-            name = 'ucer3'
+            name = "ecer6"
+    elif "oh3" in atoms:
+        if "ter2" in atoms:
+            name = "ucer3"
         else:
-            name = 'ecer3'
-    elif 'oh2' in atoms:
-        if 'ter2' in atoms:
-            name = 'ucer2'
+            name = "ecer3"
+    elif "oh2" in atoms:
+        if "ter2" in atoms:
+            name = "ucer2"
         else:
-            name = 'ecer2'
-    elif 'water' in atoms:
-        name = 'water'
+            name = "ecer2"
+    elif "water" in atoms:
+        name = "water"
     if name == None:
-        raise KeyError("Residue containing {} ".format(atoms) +
-                        "is not in the database")
+        raise KeyError(
+            "Residue containing {} ".format(atoms) + "is not in the database"
+        )
     return name
+
 
 def get_standard_topology(traj, cg):
     """ Load system information into a trajectory.
@@ -101,25 +111,26 @@ def get_standard_topology(traj, cg):
     else:
         for res in traj.top.residues:
             if not _is_lipid(res.name, cg):
-                raise KeyError("Residue {} ".format(res.name) +
-                                "is not in the molecules database "+
-                                "See analysis/molecules.py")
+                raise KeyError(
+                    "Residue {} ".format(res.name)
+                    + "is not in the molecules database "
+                    + "See analysis/molecules.py"
+                )
 
     return traj
+
 
 def load_masses(cg, topology=None, topfile=None):
     if cg:
         if topfile == None:
-            raise ValueError("topfile is a required arguement " +
-                                "if cg=True")
+            raise ValueError("topfile is a required arguement " + "if cg=True")
         print(topfile)
         tree = ET.parse(topfile)
         root = tree.getroot()
-        masses = np.fromstring(root[0].find('mass').text, sep='\n')
+        masses = np.fromstring(root[0].find("mass").text, sep="\n")
     else:
         if topology == None:
-            raise ValueError("topology is a required arguement " +
-                                "if cg=True")
+            raise ValueError("topology is a required arguement " + "if cg=True")
         masses = []
         for atom in topology.atoms:
             if atom.element.symbol == "C":
@@ -131,6 +142,7 @@ def load_masses(cg, topology=None, topfile=None):
             elif atom.element.symbol == "O":
                 masses.append(15.999)
     return np.array(masses)
+
 
 def to_residuelist(topology, cg):
     """ Convert a topology into a list of Residue objects.
@@ -153,7 +165,7 @@ def to_residuelist(topology, cg):
     for residue in topology.residues:
         if not _is_lipid(residue.name, cg=cg):
             continue
-        res_idx = topology.select('resid {}'.format(residue.index))
+        res_idx = topology.select("resid {}".format(residue.index))
         tails = []
         for tail_idx in molecule[residue.name][1]:
             tails.append(np.array(res_idx).take(tail_idx))
@@ -161,53 +173,63 @@ def to_residuelist(topology, cg):
         residuelist.append(new_residue)
     return residuelist
 
+
 def load_from_pickle(filename):
-    with open(filename, 'rb') as f:
+    with open(filename, "rb") as f:
         frames = pickle.load(f)
     print("Loading trajectory from {}".format(filename))
     return frames
 
+
 def load_from_trajectory(trajfile, topfile):
     try:
         traj = md.load(trajfile, top=topfile)
-        print("Loading trajectory from {} ".format(trajfile) +
-                "and topology from {}".format(topfile))
+        print(
+            "Loading trajectory from {} ".format(trajfile)
+            + "and topology from {}".format(topfile)
+        )
     except:
         traj = md.load(trajfile)
         print("Loading trajectory from {}".format(trajfile))
     return traj
 
+
 def extract_range(traj, masses, cg, z_min=None, z_max=None):
     molecule = collect_molecules(cg)
-    assert (z_min or z_max)
+    assert z_min or z_max
     if z_min and z_max:
-        fxn = lambda res : res.atom(molecule[res.name][0]).index
-        sel_atoms = [atom.index for residue in traj.top.residues
-                            for atom in residue.atoms
-                            if residue.name in molecule
-                            and z_min <
-                            np.mean(traj.xyz[:,fxn(residue),2]) <
-                            z_max]
+        fxn = lambda res: res.atom(molecule[res.name][0]).index
+        sel_atoms = [
+            atom.index
+            for residue in traj.top.residues
+            for atom in residue.atoms
+            if residue.name in molecule
+            and z_min < np.mean(traj.xyz[:, fxn(residue), 2]) < z_max
+        ]
         sel_atoms = np.array(sel_atoms)
         traj.atom_slice(sel_atoms, inplace=True)
         masses = masses.take(sel_atoms)
     elif z_min:
-        fxn = lambda res : res.atom(molecule[res.name][0]).index
-        sel_atoms = [atom.index for residue in traj.top.residues
-                            for atom in residue.atoms
-                            if residue.name in molecule
-                            and z_min <
-                            np.mean(traj.xyz[:,fxn(residue),2])]
+        fxn = lambda res: res.atom(molecule[res.name][0]).index
+        sel_atoms = [
+            atom.index
+            for residue in traj.top.residues
+            for atom in residue.atoms
+            if residue.name in molecule
+            and z_min < np.mean(traj.xyz[:, fxn(residue), 2])
+        ]
         sel_atoms = np.array(sel_atoms)
         traj.atom_slice(sel_atoms, inplace=True)
         masses = masses.take(sel_atoms)
     elif z_max:
-        fxn = lambda res : res.atom(molecule[res.name][0]).index
-        sel_atoms = [atom.index for residue in traj.top.residues
-                            for atom in residue.atoms
-                            if residue.name in molecule
-                            and np.mean(traj.xyz[:,fxn(residue),2]) <
-                            z_max]
+        fxn = lambda res: res.atom(molecule[res.name][0]).index
+        sel_atoms = [
+            atom.index
+            for residue in traj.top.residues
+            for atom in residue.atoms
+            if residue.name in molecule
+            and np.mean(traj.xyz[:, fxn(residue), 2]) < z_max
+        ]
         sel_atoms = np.array(sel_atoms)
         traj.atom_slice(sel_atoms, inplace=True)
         masses = masses.take(sel_atoms)
