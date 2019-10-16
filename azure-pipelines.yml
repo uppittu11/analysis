@@ -9,6 +9,7 @@ stages:
   jobs:
   - template: ./devtools/azure-pipelines-linux.yml
   - template: ./devtools/azure-pipelines-macos.yml
+  - template: ./devtools/azure-pipelines-windows.yml
 
 - stage: Coverage
   condition: succeeded()

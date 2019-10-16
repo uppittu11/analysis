@@ -1,7 +1,7 @@
 jobs:
-- job: 'macOS'
+- job: 'windows'
   pool:
-    vmImage: 'macOS-latest'
+    vmImage: 'windows-latest'
   timeoutInMinutes: 60
 
   strategy:
@@ -13,25 +13,24 @@ jobs:
     maxParallel: 10
   
   steps:
-  - bash: echo "##vso[task.prependpath]$CONDA/bin"
+  - powershell: Write-Host "##vso[task.prependpath]$env:CONDA\Scripts"
     displayName: Add conda to PATH
 
-  - bash: sudo chmod -R 777 /usr/local/miniconda
-    displayName: Fix conda permissions
-
-  - bash: |
+  - script: |
+      ECHO ON
+      set PYTHONUNBUFFERED=1
       conda config --set always_yes yes --set changeps1 no
       conda config --add channels conda-forge
       conda create -n test-environment python=$(CONDA_PY) --file requirements.txt
-      source activate test-environment
     displayName: Create new conda environment
 
-  - bash: |
-      source activate test-environment
+  - script: |
+      call activate test-environment
       pip install -e .
     displayName: Installing analysis
     
-  - bash: |
-      source activate test-environment
-      python -m pytest -v
+  - script: |
+      call activate test-environment
+      pytest -v
     displayName: Running tests
+    failOnStderr: true
