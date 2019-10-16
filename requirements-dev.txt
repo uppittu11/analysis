@@ -1,0 +1,7 @@
+mdtraj
+numpy
+scipy
+pytest
+pytest-cov
+codecov
+pre-commit
