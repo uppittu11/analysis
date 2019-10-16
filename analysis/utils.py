@@ -6,7 +6,8 @@ from analysis.angles import calc_angle
 from analysis.directors import calc_com, calc_moi, calc_director
 from analysis.s2 import calc_q, calc_s2
 
-__all__ = ['calc_all_directors', 'calc_tilt_angle', 'calc_order_parameter']
+__all__ = ["calc_all_directors", "calc_tilt_angle", "calc_order_parameter"]
+
 
 def calc_all_directors(xyz, masses, residues):
     """ Calculates directors for all residues in a frame. This is
@@ -50,21 +51,20 @@ def calc_all_directors(xyz, masses, residues):
         director = calc_director(moi)
         return director
 
-    tail_idxs = [tail for residue in residues
-                    for tail in residue.tails]
-    directors = [tail_worker(atom_indices)
-                    for atom_indices in tail_idxs]
+    tail_idxs = [tail for residue in residues for tail in residue.tails]
+    directors = [tail_worker(atom_indices) for atom_indices in tail_idxs]
     directors = np.array(directors)
     return directors
+
 
 def calc_order_parameter(directors):
     Q = calc_q(directors)
     S2 = calc_s2(Q)
     return S2
 
+
 def calc_tilt_angle(directors):
     vec1 = directors
     vec2 = [[0, 0, 1]] * len(vec1)
     tilt = calc_angle(vec1, vec2)
     return tilt
-

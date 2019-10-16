@@ -1,15 +1,17 @@
 import numpy as np
 import pickle
 
-__all__ = ['load_results']
+__all__ = ["load_results"]
+
 
 def load_results(filename, convert_to_numpy=True, fields=None):
-    with open(filename, 'rb') as f:
+    with open(filename, "rb") as f:
         results = pickle.load(f)
     if convert_to_numpy:
         results = _to_dict(results, fields=fields)
 
     return results
+
 
 def _to_dict(results, fields=None):
     """ Convert a results list of dicts to a dict of lists
@@ -33,13 +35,12 @@ def _to_dict(results, fields=None):
 
     new_results = dict()
 
-    if not(fields):
+    if not (fields):
         fields = results[0].keys()
 
     for field in fields:
         temp = [result[field] for result in results]
         temp = np.array(temp)
-        new_results.update({field : temp})
+        new_results.update({field: temp})
 
     return new_results
-
