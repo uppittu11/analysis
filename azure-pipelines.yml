@@ -28,7 +28,7 @@ stages:
         - bash: |
             conda config --set always_yes yes --set changeps1 no
             conda config --add channels conda-forge
-            conda create -n test-environment python=3.7 --file requirements.txt
+            conda create -n test-environment python=3.7 --file requirements-dev.txt
             source activate test-environment
           displayName: Create new conda environment
 
