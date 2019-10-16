@@ -31,6 +31,5 @@ jobs:
     
   - script: |
       call activate test-environment
-      pytest -v
+      python -m pytest -v
     displayName: Running tests
-    failOnStderr: true
