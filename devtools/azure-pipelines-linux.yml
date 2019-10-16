@@ -39,11 +39,12 @@ jobs:
   
   - bash: |
       source activate test-environment
-      python -m pytest -v  --cov analysis --cov-report=xml --cov-report=html
+      pip install pytest-azurepipelines
+      python -m pytest -v  --cov analysis --cov-report=html --no-coverage-upload
       codecov --file coverage.xml --token $(CODECOV_TOKEN)
     displayName: Running tests and calculating coverage
     condition: eq( variables['CONDA_PY'], '3.7' )
-  
+
   - task: PublishCodeCoverageResults@1
     inputs: 
       codeCoverageTool: Cobertura
