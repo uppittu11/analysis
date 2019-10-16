@@ -35,12 +35,12 @@ jobs:
       source activate test-environment
       python -m pytest -v
     displayName: Running tests
-    condition: eq( $CONDA_PY, "3.6" )
+    condition: eq( $(CONDA_PY), "3.6" )
   
   - bash: |
       source activate test-environment
       python -m pytest -v  --cov analysis --cov-report xml:./coverage.xml
       codecov --file coverage.xml --token $(CODECOV_TOKEN)
     displayName: Running tests and calculating coverage
-    condition: eq( $CONDA_PY, "3.7" )
+    condition: eq( $(CONDA_PY), "3.7" )
 
