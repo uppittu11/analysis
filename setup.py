@@ -20,4 +20,7 @@ setup(name='analysis',
       package_dir={'analysis': 'analysis'},
       include_package_data=True,
       install_requires=["mdtraj"],
+      entry_points={
+          "console_scripts" : ["analyze=bin.analyze:main"],
+          }
 )
