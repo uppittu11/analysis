@@ -9,7 +9,7 @@ The package can be installed via `pip`
 
 1. Clone the repository
 ```bash
-git clone 
+git clone https://github.com/uppittu11/analysis.git
 ```
 
 2. Install the package
