@@ -5,9 +5,9 @@ from argparse import ArgumentParser
 import numpy as np
 import scipy.stats as stats
 import mdtraj as md
-import analysis.analysis as analysis
-from analysis.analysis.frame import Frame
-from analysis.analysis.molecules import collect_molecules
+import analysis
+from analysis.frame import Frame
+from analysis.molecules import collect_molecules
 import copy as cp
 
 def analyze_all(frame):
