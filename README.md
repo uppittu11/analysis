@@ -4,7 +4,21 @@
 
 Analysis scripts for molecular dynamics simulations of stratum corneum lipid multilayers.
 
-Current measurements:
+## Installation Instructions
+The package can be installed via `pip`
+
+1. Clone the repository
+```bash
+git clone 
+```
+
+2. Install the package
+```bash
+cd analysis
+pip install -e .
+```
+
+## Current measurements
 - Tilt Angles
 - Bilayer/Multilayer Height
 - Nematic Order Parameter
