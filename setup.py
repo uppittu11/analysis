@@ -22,5 +22,6 @@ setup(name='analysis',
       install_requires=["mdtraj"],
       entry_points={
           "console_scripts" : ["analyze=bin.analyze:main"],
-          }
+          },
+      scripts=['bin/progress.sh'],
 )

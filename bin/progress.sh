@@ -1,10 +1,11 @@
-total=$1
+outfile=$1
+total=$2
 n_old=0
 diffr1=0
 diffr2=0
 while true; do
     echo -en "\r"
-    n=$( grep -c imaframe log.txt )
+    n=$( grep -c imaframe $1 )
 
     if [ $n -eq 0 ]
     then
