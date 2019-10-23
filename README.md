@@ -4,7 +4,44 @@
 
 Analysis scripts for molecular dynamics simulations of stratum corneum lipid multilayers.
 
-Current measurements:
+## Installation Instructions
+The package can be installed via `pip`
+
+1. Clone the repository
+```bash
+git clone https://github.com/uppittu11/analysis.git
+```
+
+2. Install the package
+```bash
+cd analysis
+pip install -e .
+```
+
+## Usage
+To calculate basic structural properties (tilt angle, repeat distance, nematic order, and area per lipid) using a parallel multiprocessing pool, use the bash command `analysis`.
+
+### Command line arguments for `analysis`
+`-f` trajectory file (needs to be a format loadable by MDTraj)
+
+`-c` topology file (needs to be a format loadable by MDTraj)
+
+`-o` output directory
+
+`-n` number of leaflets
+
+`--cg` use this flag to denote a coarse-grain system
+
+`--reload` use this flag to ignore cached trajectory (typically located in the output directory)
+
+`--min` minimum z position of lipid headgroups to include in analysis
+
+`--max` maximum z position of lipid headgroups to include in analysis. Use `--min` and `--max` to specify one or more layers in a multilayer system
+
+### Loading in results
+`analysis` will output a `pickle`d dictionary file containing structural properties calculated for each frame of the trajectory (default: `outputDirectory/results.p`. This output file can be loaded and analyzed using functions in the `analysis.data` module.
+
+## Currently Supported Measurements
 - Tilt Angles
 - Bilayer/Multilayer Height
 - Nematic Order Parameter
