@@ -18,10 +18,17 @@ cd analysis
 pip install -e .
 ```
 
-## Usage
-To calculate basic structural properties (tilt angle, repeat distance, nematic order, and area per lipid) using a parallel multiprocessing pool, use the bash command `analysis`.
+3. Run tests for the package
+```bash
+pytest -v analysis
+```
 
-### Command line arguments for `analysis`
+I suggest you install this package in a separate `conda` environment so the `analyze` command does not clobber anything in your default namespace
+
+## Usage
+To calculate basic structural properties (tilt angle, repeat distance, nematic order, and area per lipid) using a parallel multiprocessing pool, use the bash command `analyze`.
+
+### Command line arguments for `analyze`
 `-f` trajectory file (needs to be a format loadable by MDTraj)
 
 `-c` topology file (needs to be a format loadable by MDTraj)
