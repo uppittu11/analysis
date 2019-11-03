@@ -1,10 +1,10 @@
 import pytest
 import numpy as np
 import analysis
-from analysis.tests.basetest import BaseTest
+from .conf_test import ConfTest
 
 
-class TestAngles(BaseTest):
+class TestAngles(ConfTest):
     @pytest.fixture
     def sample_coords(self):
         coord1 = [[1, 0, 0], [0, -1, 0], [1, 1, 1], [-1, 2, 4]]
