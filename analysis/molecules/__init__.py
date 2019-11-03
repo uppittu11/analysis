@@ -1,1 +1,0 @@
-from analysis.molecules.molecules import collect_molecules

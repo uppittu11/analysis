@@ -1,6 +1,6 @@
 import mdtraj as md
 import numpy as np
-from .smoothing import savitzky_golay
+from analysis.smoothing import savitzky_golay
 from scipy.signal import find_peaks
 
 __all__ = ["calc_peaks", "calc_height"]

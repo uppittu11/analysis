@@ -1,7 +1,7 @@
 import mdtraj as md
 import numpy as np
-from .molecules import collect_molecules
-from .residue import Residue
+from analysis.molecules.molecules import collect_molecules
+from analysis.residue import Residue
 from xml.etree import cElementTree as ET
 import pickle
 
