@@ -21,7 +21,7 @@ def _load_json(fname):
         molecule = Molecule()
         molecule_dict = json.load(f)
         molecule.from_dict(molecule_dict)
-        return {molecule.name : molecule}
+    return {molecule.name : molecule}
 
 def _load_jsons(library_dir):
     json_files = glob.glob(os.path.join(library_dir, "*.json"))
