@@ -1,5 +1,6 @@
 import pytest
 
+
 class ConfTest:
     def get_fn(self, filename):
         import os.path
