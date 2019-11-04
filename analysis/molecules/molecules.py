@@ -75,7 +75,7 @@ class Molecule(object):
         return self._n_atoms
 
     @name.setter
-    def name(self, n_atoms):
+    def n_atoms(self, n_atoms):
         self._n_atoms = n_atoms
         self._validate_molecule()
 
