@@ -31,10 +31,15 @@ def _load_jsons(library_dir):
     return library
 
 class Molecule(object):
-    def __init__(self, name="Molecule", head=0, tails=[], n_atoms=0):
+    def __init__(self, name="Molecule", head=0, tails=None, n_atoms=0):
         self._name = name
         self._head = head
-        self._tails = tails
+        if tails == None:
+            self._tails = []
+        else:
+            for index, tail in enumerate(tails):
+                tails[index] = self._validate(tail)
+            self._tails = tails
         self._n_atoms = n_atoms
         self._validate_molecule()
 
@@ -61,14 +66,34 @@ class Molecule(object):
         return self._tails
 
     def add_tail(self, tail):
+        tail = self._validate_tail(tail)
         self._tails.append(tail)
         self._validate_molecule()
 
     def remove_tail(self, tail):
+        # if the tail is an int the tail at that index is removed
         if isinstance(tail, int):
             del self._tails[tail]
-        elif isinstance(tail, tuple):
+        # it the tail is iterable, the first matching tail is removed
+        else:
+            tail = self._validate_tail(tail)
             self._tails.remove(tail)
+
+    def _validate_tail(self, tail):
+        # check if tail is an iterable
+        try:
+            iter(tail)
+            tail = tuple(tail)
+        except TypeError:
+            raise TypeError("tail must be iterable")
+
+        # check if indices are ints
+        try:
+            for index in tail: assert isinstance(index, int)
+        except TypeError:
+            raise TypeError("Indices must be ints")
+
+        return tail
 
     @property
     def n_atoms(self):
@@ -86,7 +111,17 @@ class Molecule(object):
             raise TypeError("Argument 'molecule_dict' must be dict type")
 
         for key in molecule_dict:
-            setattr(self, '_'+str(key), molecule_dict[key])
+            if key == "name":
+                self.name = molecule_dict[key]
+            elif key == "n_atoms":
+                self.n_atoms = molecule_dict[key]
+            elif key == "tails":
+                for tail in molecule_dict[key]:
+                    self.add_tail(tail)
+            elif key == "head":
+                self.head = molecule_dict[key]
+            else:
+                setattr(self, '_'+str(key), molecule_dict[key])
 
         self._validate_molecule()
 
@@ -112,3 +147,7 @@ class Molecule(object):
             assert isinstance(self._n_atoms, int)
         except AssertionError:
             raise TypeError("Attribute 'n_atoms' must be int type")
+
+    def __repr__(self):
+        return "<Molecule {}, {} atoms, id: {}>".format(self._name,
+                self.n_atoms, id(self))
