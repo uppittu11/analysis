@@ -99,7 +99,7 @@ class Molecule(object):
     def n_atoms(self):
         return self._n_atoms
 
-    @name.setter
+    @n_atoms.setter
     def n_atoms(self, n_atoms):
         self._n_atoms = n_atoms
         self._validate_molecule()
