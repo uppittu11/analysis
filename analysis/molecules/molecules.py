@@ -67,7 +67,7 @@ class Molecule(object):
     def remove_tail(self, tail):
         if isinstance(tail, int):
             del self._tails[tail]
-        elif isinstance(tail, list):
+        elif isinstance(tail, tuple):
             self._tails.remove(tail)
 
     @property
@@ -103,6 +103,8 @@ class Molecule(object):
 
         try:
             assert isinstance(self._tails, list)
+            for tail in self._tails:
+                assert isinstance(tail, tuple)
         except AssertionError:
             raise TypeError("Attribute 'tails' must be list type")
 
