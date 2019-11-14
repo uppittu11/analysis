@@ -20,5 +20,20 @@ class TestLoad(ConfTest):
         assert traj.n_atoms == 747
         assert traj.n_residues == 182
 
+    def test_load_aa(self):
+        topology = "./include/test_aa.gro"
+        trajectory = "./include/test_aa.dcd"
+        traj = analysis.load.load_from_trajectory(trajectory, topology)
+        assert traj.n_frames == 10
+        assert traj.n_atoms == 2264
+        assert traj.n_residues == 153
+
+    def test_load_aa_notraj(self):
+        topology = "./include/test_aa.gro"
+        traj = analysis.load.load_from_trajectory(topology)
+        assert traj.n_frames == 1
+        assert traj.n_atoms == 2264
+        assert traj.n_residues == 153
+
 
 
