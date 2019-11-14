@@ -13,5 +13,12 @@ class TestLoad(ConfTest):
         assert traj.n_atoms == 747
         assert traj.n_residues == 182
 
+    def test_load_cg_notraj(self):
+        topology = "./include/test_cg.hoomdxml"
+        traj = analysis.load.load_from_trajectory(topology)
+        assert traj.n_frames == 1
+        assert traj.n_atoms == 747
+        assert traj.n_residues == 182
+
 
 

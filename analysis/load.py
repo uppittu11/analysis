@@ -181,14 +181,14 @@ def load_from_pickle(filename):
     return frames
 
 
-def load_from_trajectory(trajfile, topfile):
-    try:
+def load_from_trajectory(trajfile, topfile=None):
+    if topfile:
         traj = md.load(trajfile, top=topfile)
         print(
             "Loading trajectory from {} ".format(trajfile)
             + "and topology from {}".format(topfile)
         )
-    except:
+    else:
         traj = md.load(trajfile)
         print("Loading trajectory from {}".format(trajfile))
     return traj
