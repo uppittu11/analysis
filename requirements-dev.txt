@@ -1,4 +1,5 @@
 mdtraj
+networkx
 numpy
 scipy
 pytest
