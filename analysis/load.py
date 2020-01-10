@@ -29,7 +29,11 @@ def _is_lipid(resname, cg):
     boolean
         True if resnam is in molecule. False otherwise
     """
-    molecule = collect_molecules(cg)
+    if cg:
+        molecule = collect_molecules("cg")
+    else:
+        molecule = collect_molecules("atomistic")
+
     return resname in molecule
 
 
@@ -159,7 +163,10 @@ def to_residuelist(topology, cg):
     residuelist : list
         list of Residue objects
     """
-    molecule = collect_molecules(cg)
+    if cg:
+        molecule = collect_molecules("cg")
+    else:
+        molecule = collect_molecules("atomistic")
     assert type(topology) == md.Topology
     residuelist = []
     for residue in topology.residues:
@@ -167,7 +174,7 @@ def to_residuelist(topology, cg):
             continue
         res_idx = topology.select("resid {}".format(residue.index))
         tails = []
-        for tail_idx in molecule[residue.name][1]:
+        for tail_idx in molecule[residue.name].tails:
             tails.append(np.array(res_idx).take(tail_idx))
         new_residue = Residue(name=residue.name, tails=tails)
         residuelist.append(new_residue)
@@ -195,10 +202,13 @@ def load_from_trajectory(trajfile, topfile):
 
 
 def extract_range(traj, masses, cg, z_min=None, z_max=None):
-    molecule = collect_molecules(cg)
+    if cg:
+        molecule = collect_molecules("cg")
+    else:
+        molecule = collect_molecules("atomistic")
     assert z_min or z_max
     if z_min and z_max:
-        fxn = lambda res: res.atom(molecule[res.name][0]).index
+        fxn = lambda res: res.atom(molecule[res.name].head).index
         sel_atoms = [
             atom.index
             for residue in traj.top.residues
@@ -210,7 +220,7 @@ def extract_range(traj, masses, cg, z_min=None, z_max=None):
         traj.atom_slice(sel_atoms, inplace=True)
         masses = masses.take(sel_atoms)
     elif z_min:
-        fxn = lambda res: res.atom(molecule[res.name][0]).index
+        fxn = lambda res: res.atom(molecule[res.name].head).index
         sel_atoms = [
             atom.index
             for residue in traj.top.residues
@@ -222,7 +232,7 @@ def extract_range(traj, masses, cg, z_min=None, z_max=None):
         traj.atom_slice(sel_atoms, inplace=True)
         masses = masses.take(sel_atoms)
     elif z_max:
-        fxn = lambda res: res.atom(molecule[res.name][0]).index
+        fxn = lambda res: res.atom(molecule[res.name].head).index
         sel_atoms = [
             atom.index
             for residue in traj.top.residues

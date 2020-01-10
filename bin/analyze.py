@@ -7,7 +7,6 @@ import scipy.stats as stats
 import mdtraj as md
 import analysis
 from analysis.frame import Frame
-from analysis.molecules import collect_molecules
 import copy as cp
 
 def analyze_all(frame):
