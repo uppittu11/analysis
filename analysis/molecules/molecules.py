@@ -38,7 +38,7 @@ class Molecule(object):
             self._tails = []
         else:
             for index, tail in enumerate(tails):
-                tails[index] = self._validate(tail)
+                tails[index] = self._validate_tail(tail)
             self._tails = tails
         self._n_atoms = n_atoms
         self._validate_molecule()
