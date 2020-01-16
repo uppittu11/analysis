@@ -9,7 +9,7 @@ from analysis.s2 import calc_q, calc_s2
 __all__ = ["calc_all_directors", "calc_tilt_angle", "calc_order_parameter"]
 
 
-def calc_all_directors(xyz, masses, residues):
+def calc_all_directors(xyz, masses, residues, com=False):
     """ Calculates directors for all residues in a frame. This is
     a wrapper for the calc_director function which only works for
     a single residue
@@ -20,6 +20,8 @@ def calc_all_directors(xyz, masses, residues):
         frame to analyze
     masses : list
         list of masses corresponding to each bead in the frame
+    com : boolean
+        Returns the COM for each tail if true
 
     Returns:
     --------
