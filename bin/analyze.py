@@ -21,9 +21,13 @@ def analyze_all(frame):
     frame.validate_frame()
 
     # Calculates directors for a given set of residues
-    directors = analysis.utils.calc_all_directors(frame.xyz,
-                                                    frame.masses,
-                                                    frame.residuelist)
+    tail_info = analysis.utils.calc_all_directors(frame.xyz,
+                                                  frame.masses,
+                                                  frame.residuelist,
+                                                  return_coms=True)
+
+    directors = tail_info["directors"]
+    coms = tail_info["coms"]
 
     # Calculate Tilt Angles
     tilt = analysis.utils.calc_tilt_angle(directors)
