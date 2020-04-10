@@ -121,7 +121,7 @@ def main():
         # size is 0, this will at least provide some more specific feedback
         # as to why
         if len(sel_atoms) == 0:
-            print("Error: selection does not include any atoms.")
+            raise ValueError("Error: selection does not include any atoms.")
         
         traj.atom_slice(sel_atoms, inplace=True)
         masses = masses.take(sel_atoms)
