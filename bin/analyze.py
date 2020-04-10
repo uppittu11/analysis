@@ -67,6 +67,11 @@ def main():
                         default=None)
     parser.add_argument("--max", action="store", type=float,
                         default=None)
+    #pass a specific selection to parse from the trajectory
+    #by default this will select everything not water
+    parser.add_argument("-s", "--select", action="store", type=str,
+                        default="all_lipids")
+
     options = parser.parse_args()
 
     trajfile = options.file
@@ -77,6 +82,9 @@ def main():
     reload_traj = options.reload
     z_min = options.min
     z_max = options.max
+    
+    selection_string  = options.select
+
 
     ## LOADING TRAJECTORIES
     # If cached traj exists:
@@ -99,10 +107,22 @@ def main():
             masses = analysis.load.load_masses(cg, topology=traj.top)
         print('Loaded masses')
 
-        # keep only the lipids
-        sel_atoms = traj.top.select("(not name water) and " +
+        if selection_string == 'all_lipids':
+            # keep only the lipids
+            sel_atoms = traj.top.select("(not name water) and " +
                                         "(not resname tip3p " +
                                         "HOH SOL)")
+        else:
+            print('Parsing trajectory based on selection: ', selection_string)
+            sel_atoms = traj.top.select("( " + selection_string + ")")
+        
+        # very simple check to ensure that the selection actually
+        # contains some atoms atom_slice will fail if the array
+        # size is 0, this will at least provide some more specific feedback
+        # as to why
+        if len(sel_atoms) == 0:
+            raise ValueError("Error: selection does not include any atoms.")
+        
         traj.atom_slice(sel_atoms, inplace=True)
         masses = masses.take(sel_atoms)
 
