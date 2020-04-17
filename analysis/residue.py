@@ -19,12 +19,15 @@ class Residue(object):
     tails : list, optional, default=[]
         The indices for each tail of the molecule. This is typically
         taken from the molecules dictionary
-
+    la_regions : list, optional, default=[]
+        The indices of the molecule used for performing "linear analysis",
+        i.e., the directory, S2, and tilt angle.
     """
 
-    def __init__(self, name="RES", tails=[]):
+    def __init__(self, name="RES", tails=[], la_regions=[]):
         self._name = name
         self._tails = tails
+        self._la_regions = la_regions
 
     @property
     def name(self):
@@ -38,6 +41,10 @@ class Residue(object):
     def tails(self):
         return self._tails
 
+    @property
+    def la_regions(self):
+        return self._la_regions
+    
     @tails.setter
     def tails(self, tails):
         self._tails = tails
@@ -45,3 +52,11 @@ class Residue(object):
     def add_tail(self, tail):
         tail = np.array(tail)
         self._tails.append(tail)
+
+    @la_regions.setter
+    def la_regions(self, la_regions):
+        self._la_regions = la_regions
+    
+    def add_la_regions(self, la_region):
+        la_region = np.array(la_region)
+        self._la_regions.append(la_region)

@@ -176,7 +176,17 @@ def to_residuelist(topology, cg):
         tails = []
         for tail_idx in molecule[residue.name].tails:
             tails.append(np.array(res_idx).take(tail_idx))
-        new_residue = Residue(name=residue.name, tails=tails)
+        la_regions = []
+        if len(molecule[residue.name].la_regions) == 0:
+            la_regions = tails.copy()
+            print('copying tails')
+        else:
+            print('reading la_regions ', len(molecule[residue.name].la_regions))
+        
+            for lar_idx in molecule[residue.name].la_regions:
+                la_regions.append(np.array(res_idx).take(lar_idx))
+
+        new_residue = Residue(name=residue.name, tails=tails,la_regions=la_regions)
         residuelist.append(new_residue)
     return residuelist
 
