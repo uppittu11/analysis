@@ -182,7 +182,7 @@ def to_residuelist(topology, cg):
             #this print statement can probably be eventually removed once we are sure all
             #molecule files have been updated appropriately
             print('la_regions not defined, copying indeces from tails for molecule ', residue.name)
-
+        else:
             for lar_idx in molecule[residue.name].la_regions:
                 la_regions.append(np.array(res_idx).take(lar_idx))
 
