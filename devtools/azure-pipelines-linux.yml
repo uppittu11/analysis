@@ -41,7 +41,7 @@ jobs:
       source activate test-environment
       pip install pytest-azurepipelines
       python -m pytest -v  --cov analysis --cov-report=html --no-coverage-upload
-      codecov --file coverage.xml --token $(CODECOV_TOKEN)
+      bash <(curl -s https://codecov.io/bash) -C $(Build.SourceVersion)
     displayName: Running tests and calculating coverage
     condition: eq( variables['CONDA_PY'], '3.7' )
 
