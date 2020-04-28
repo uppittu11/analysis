@@ -31,7 +31,7 @@ def _load_jsons(library_dir):
     return library
 
 class Molecule(object):
-    def __init__(self, name="Molecule", head=0, tails=None, n_atoms=0):
+    def __init__(self, name="Molecule", head=0, tails=None, la_regions=None, n_atoms=0):
         self._name = name
         self._head = head
         if tails == None:
@@ -40,6 +40,19 @@ class Molecule(object):
             for index, tail in enumerate(tails):
                 tails[index] = self._validate_tail(tail)
             self._tails = tails
+                
+        #la_regions is meant to denote the indices that should be used
+        #for linear structural analysis, e.g., tilt angle and S2
+        #this is to capture for example, only the 'equal' length portion of the tail
+        #and exclude the interdigitated region between leaflets
+        #that is typically disordered
+        if la_regions == None:
+            self._la_regions = []
+        else:
+            for index, la_region in enumerate(la_regions):
+                la_regions[index] = self._validate_la_region(la_region)
+            self._la_regions = la_regions
+
         self._n_atoms = n_atoms
         self._validate_molecule()
 
@@ -64,6 +77,10 @@ class Molecule(object):
     @property
     def tails(self):
         return self._tails
+
+    @property
+    def la_regions(self):
+        return self._la_regions
 
     def add_tail(self, tail):
         tail = self._validate_tail(tail)
@@ -95,6 +112,37 @@ class Molecule(object):
 
         return tail
 
+
+    def add_la_region(self, la_region):
+                    la_region = self._validate_la_region(la_region)
+                    self._la_regions.append(la_region)
+                    self._validate_molecule()
+
+    def remove_la_region(self, la_region):
+        # if the tail is an int the tail at that index is removed
+        if isinstance(la_region, int):
+            del self._la_regions[la_region]
+            # it the la_region is iterable, the first matching la_region is removed
+        else:
+            la_region = self._validate_la_region(la_region)
+            self._la_regions.remove(la_region)
+
+    def _validate_la_region(self, la_region):
+        # check if la_region is an iterable
+        try:
+            iter(la_region)
+            la_region = tuple(la_region)
+        except TypeError:
+            raise TypeError("la_region must be iterable")
+                
+        # check if indices are ints
+        try:
+            for index in la_region: assert isinstance(index, int)
+        except TypeError:
+            raise TypeError("Indices must be ints")
+            
+        return la_region
+
     @property
     def n_atoms(self):
         return self._n_atoms
@@ -120,6 +168,9 @@ class Molecule(object):
                     self.add_tail(tail)
             elif key == "head":
                 self.head = molecule_dict[key]
+            elif key == "la_regions":
+                for la_region in molecule_dict[key]:
+                    self.add_la_region(la_region)
             else:
                 setattr(self, '_'+str(key), molecule_dict[key])
 
@@ -142,7 +193,12 @@ class Molecule(object):
                 assert isinstance(tail, tuple)
         except AssertionError:
             raise TypeError("Attribute 'tails' must be list type")
-
+        try:
+            assert isinstance(self._la_regions, list)
+            for la_r in self._la_regions:
+                assert isinstance(la_r, tuple)
+        except AssertionError:
+            raise TypeError("Attribute 'la_regions' must be list type")
         try:
             assert isinstance(self._n_atoms, int)
         except AssertionError:
