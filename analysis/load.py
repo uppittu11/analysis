@@ -63,11 +63,16 @@ def get_cg_residuename(residue):
                 name = "ffa15"
             else:
                 name = "ffa16"
-    elif "oh4" in atoms:
+    elif "oh4" in atoms and "oh3" in atoms:
         if "ter2" in atoms:
             name = "ucer6"
         else:
             name = "ecer6"
+    elif "oh4" in atoms:
+        if "ter2" in atoms:
+            name = "ucer5"
+        else:
+            name = "ecer5"
     elif "oh3" in atoms:
         if "ter2" in atoms:
             name = "ucer3"
