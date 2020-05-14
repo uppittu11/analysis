@@ -63,11 +63,16 @@ def get_cg_residuename(residue):
                 name = "ffa15"
             else:
                 name = "ffa16"
-    elif "oh4" in atoms:
+    elif "oh4" in atoms and "oh3" in atoms:
         if "ter2" in atoms:
             name = "ucer6"
         else:
             name = "ecer6"
+    elif "oh4" in atoms:
+        if "ter2" in atoms:
+            name = "ucer5"
+        else:
+            name = "ecer5"
     elif "oh3" in atoms:
         if "ter2" in atoms:
             name = "ucer3"
@@ -176,7 +181,17 @@ def to_residuelist(topology, cg):
         tails = []
         for tail_idx in molecule[residue.name].tails:
             tails.append(np.array(res_idx).take(tail_idx))
-        new_residue = Residue(name=residue.name, tails=tails)
+        la_regions = []
+        if len(molecule[residue.name].la_regions) == 0:
+            la_regions = tails.copy()
+            #this print statement can probably be eventually removed once we are sure all
+            #molecule files have been updated appropriately
+            print('la_regions not defined, copying indeces from tails for molecule ', residue.name)
+        else:
+            for lar_idx in molecule[residue.name].la_regions:
+                la_regions.append(np.array(res_idx).take(lar_idx))
+
+        new_residue = Residue(name=residue.name, tails=tails,la_regions=la_regions)
         residuelist.append(new_residue)
     return residuelist
 
