@@ -17,10 +17,16 @@ def calc_peaks(z, z_range, weights=None, n_layers=0, window=41, smooth=True, **k
         1-D points
     z_range : tuple
         The [min, max] z to use for creating the histogram
-    n_layers : int
+    n_layers : int,
         the expected number of peaks to find.
-    window : int
+    window : int, default=41
         Window size for Savizky-Golay smoothing. Must be odd, positive
+    smooth : bool, default=True
+        Smooth the histogram before finding peaks. This is useful when
+        we have noisy data.
+    **kwargs
+        Keyword arguments to pass to the scipy.signal.find_peaks()
+        function.
 
     Returns:
     --------
@@ -84,7 +90,7 @@ def calc_height(frame, atoms, window=41):
     atoms : list
         A list of atom indices. These are used to create the
         mass density histogram
-    window : int
+    window : int, default=41
         Window size for Savizky-Golay smoothing. Must be odd, positive
 
     Returns:

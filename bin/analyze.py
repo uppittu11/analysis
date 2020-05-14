@@ -51,13 +51,10 @@ def analyze_all(frame):
         mask = np.logical_and(coms[:,2] > lmin,
                               coms[:,2] < lmax)
         leaflet_directors = directors[mask]
-        print(leaflet_directors.shape)
         leaflet_tilt = analysis.utils.calc_tilt_angle(leaflet_directors)
         leaflet_s2 = analysis.utils.calc_order_parameter(leaflet_directors)
         tilt.append(leaflet_tilt)
         s2.append(leaflet_s2)
-    print(tilt)
-    print(s2)
 
     # Calculate Area per Lipid: cross section / n_lipids
     apl = (frame.unitcell_lengths[0] * frame.unitcell_lengths[1] /
@@ -155,9 +152,6 @@ def main():
 
         # Load system information
         traj = analysis.load.get_standard_topology(traj, cg)
-
-        # Center coordinates
-        traj.xyz -= np.mean(traj.xyz, axis=1)[:,None,:]
 
         # Extract atoms within a specified z range
         if (z_min or z_max):
