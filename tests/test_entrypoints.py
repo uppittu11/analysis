@@ -8,7 +8,7 @@ class TestEntrypoints(ConfTest):
     def test_entrypoint_atomistic(self):
         traj = self.get_fn("test_aa.dcd")
         top = self.get_fn("test_aa.gro")
-        output_dir = self.get_fn("data")
+        output_dir = self.get_fn(".")
 
         exit_status = os.system(
                 f"analyze -c {top} -f {traj} -o {output_dir} --reload"
@@ -19,7 +19,7 @@ class TestEntrypoints(ConfTest):
     def test_entrypoint_cg(self):
         traj = self.get_fn("test_cg.dcd")
         top = self.get_fn("test_cg.hoomdxml")
-        output_dir = self.get_fn("data")
+        output_dir = self.get_fn(".")
 
         exit_status = os.system(
                 f"analyze -c {top} -f {traj} -o {output_dir} --reload --cg "
