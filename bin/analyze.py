@@ -12,8 +12,7 @@ import copy as cp
 def analyze_all(frame):
     # Prints frame number to terminal for each frame.
     # Can be piped to a file and used to track progress
-    if not quiet:
-        print('imaframe')
+    print('imaframe')
 
     # Note: if you want to calculate properties for a particular layer,
     # slice it out prior to running this function
@@ -100,7 +99,6 @@ def main():
     #by default this will select everything not water
     parser.add_argument("-s", "--select", action="store", type=str,
                         default="all_lipids")
-    parser.add_argument("--quiet", action="store_true", default=False)
 
     options = parser.parse_args()
 
@@ -113,7 +111,6 @@ def main():
     z_min = options.min
     z_max = options.max
     selection_string  = options.select
-    quiet = options.quiet
 
 
     ## LOADING TRAJECTORIES
