@@ -12,7 +12,8 @@ import copy as cp
 def analyze_all(frame):
     # Prints frame number to terminal for each frame.
     # Can be piped to a file and used to track progress
-    print('imaframe')
+    if not quiet:
+        print('imaframe')
 
     # Note: if you want to calculate properties for a particular layer,
     # slice it out prior to running this function
@@ -23,17 +24,41 @@ def analyze_all(frame):
     # Calculates directors for a given set of residues
     tail_info = analysis.utils.calc_all_directors(frame.xyz,
                                                   frame.masses,
-                                                  frame.residuelist,
-                                                  return_coms=True)
+                                                  frame.residuelist)
 
     directors = tail_info["directors"]
-    coms = tail_info["coms"]
+    coms = tail_info["coms"].squeeze()
 
-    # Calculate Tilt Angles
-    tilt = analysis.utils.calc_tilt_angle(directors)
+    # Get the locations of each leaflet based on the
+    # z_coord of the COMs
+    z = coms[:,2]
+    peaks = analysis.height.calc_peaks(
+                z, [np.min(z), np.max(z)],
+                n_layers=frame.n_leaflets,
+                prominence=0,
+                distance=50
+                )
 
-    # Calculate Nematic Order Parameter
-    s2 = analysis.utils.calc_order_parameter(directors)
+    # Get z-ranges encompassing each leaflet
+    leaflet_centers = (peaks[1:] + peaks[:-1]) * 0.5
+    leaflet_centers = [-np.inf] + list(leaflet_centers) + [np.inf]
+    leaflet_ranges = [(leaflet_centers[i], leaflet_centers[i+1])
+                      for i in range(len(leaflet_centers)-1)]
+
+    # Get the tilt angle and nematic order for each leaflet
+    tilt = []
+    s2 = []
+    for lmin, lmax in leaflet_ranges:
+        mask = np.logical_and(coms[:,2] > lmin,
+                              coms[:,2] < lmax)
+        leaflet_directors = directors[mask]
+        print(leaflet_directors.shape)
+        leaflet_tilt = analysis.utils.calc_tilt_angle(leaflet_directors)
+        leaflet_s2 = analysis.utils.calc_order_parameter(leaflet_directors)
+        tilt.append(leaflet_tilt)
+        s2.append(leaflet_s2)
+    print(tilt)
+    print(s2)
 
     # Calculate Area per Lipid: cross section / n_lipids
     apl = (frame.unitcell_lengths[0] * frame.unitcell_lengths[1] /
@@ -75,6 +100,7 @@ def main():
     #by default this will select everything not water
     parser.add_argument("-s", "--select", action="store", type=str,
                         default="all_lipids")
+    parser.add_argument("--quiet", action="store_true", default=False)
 
     options = parser.parse_args()
 
@@ -86,8 +112,8 @@ def main():
     reload_traj = options.reload
     z_min = options.min
     z_max = options.max
-    
     selection_string  = options.select
+    quiet = options.quiet
 
 
     ## LOADING TRAJECTORIES
@@ -119,19 +145,22 @@ def main():
         else:
             print('Parsing trajectory based on selection: ', selection_string)
             sel_atoms = traj.top.select("( " + selection_string + ")")
-        
+
         # very simple check to ensure that the selection actually
         # contains some atoms atom_slice will fail if the array
         # size is 0, this will at least provide some more specific feedback
         # as to why
         if len(sel_atoms) == 0:
             raise ValueError("Error: selection does not include any atoms.")
-        
+
         traj.atom_slice(sel_atoms, inplace=True)
         masses = masses.take(sel_atoms)
 
         # Load system information
         traj = analysis.load.get_standard_topology(traj, cg)
+
+        # Center coordinates
+        traj.xyz -= np.mean(traj.xyz, axis=1)[:,None,:]
 
         # Extract atoms within a specified z range
         if (z_min or z_max):

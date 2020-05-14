@@ -7,17 +7,18 @@ from scipy.signal import find_peaks
 __all__ = ["calc_peaks", "calc_height"]
 
 
-def calc_peaks(z, z_range, weights=None, n_layers=0, window=41):
+def calc_peaks(z, z_range, weights=None, n_layers=0, window=41, smooth=True, **kwargs):
     """ Calculate the locations of peaks in 1-D mass density
     Calculates a mass-weighted density histogram along the z-dimension
 
     Parameters:
     -----------
-    frame : analysis.Frame
-        The frame to be analyzed
-    atoms : list
-        A list of atom indices. These are used to create the
-        mass density histogram
+    z : numpy.array
+        1-D points
+    z_range : tuple
+        The [min, max] z to use for creating the histogram
+    n_layers : int
+        the expected number of peaks to find.
     window : int
         Window size for Savizky-Golay smoothing. Must be odd, positive
 
@@ -29,7 +30,7 @@ def calc_peaks(z, z_range, weights=None, n_layers=0, window=41):
     """
 
     # Create histogram
-    if weights == None:
+    if weights is None:
         weights = np.ones_like(z)
 
     hist, edges = np.histogram(
@@ -38,11 +39,16 @@ def calc_peaks(z, z_range, weights=None, n_layers=0, window=41):
     bins = (edges[1:] + edges[:-1]) * 0.5
 
     # Smoothing via Savitzky-Golay
-    hist = savitzky_golay(hist, window, 5)
+    if smooth:
+        hist = savitzky_golay(hist, window, 5)
 
     # Gets peak indices
     # Prominance: https://en.wikipedia.org/wiki/Topographic_prominence
-    peaks, _ = find_peaks(hist, prominence=np.max(hist) * 0.25, distance=100)
+    if "prominence" not in kwargs:
+        kwargs["prominence"] = np.max(hist) * 0.25
+    if "distance" not in kwargs:
+        kwargs["distance"] = 100
+    peaks, _ = find_peaks(hist, **kwargs)
     peaks = np.sort(peaks)
     peaks = bins[peaks]
 
