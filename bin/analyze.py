@@ -21,9 +21,12 @@ def analyze_all(frame):
     frame.validate_frame()
 
     # Calculates directors for a given set of residues
-    directors = analysis.utils.calc_all_directors(frame.xyz,
-                                                    frame.masses,
-                                                    frame.residuelist)
+    tail_info = analysis.utils.calc_all_directors(frame.xyz,
+                                                  frame.masses,
+                                                  frame.residuelist)
+
+    directors = tail_info["directors"]
+    coms = tail_info["coms"]
 
     # Calculate Tilt Angles
     tilt = analysis.utils.calc_tilt_angle(directors)
@@ -82,7 +85,7 @@ def main():
     reload_traj = options.reload
     z_min = options.min
     z_max = options.max
-    
+
     selection_string  = options.select
 
 
@@ -115,14 +118,14 @@ def main():
         else:
             print('Parsing trajectory based on selection: ', selection_string)
             sel_atoms = traj.top.select("( " + selection_string + ")")
-        
+
         # very simple check to ensure that the selection actually
         # contains some atoms atom_slice will fail if the array
         # size is 0, this will at least provide some more specific feedback
         # as to why
         if len(sel_atoms) == 0:
             raise ValueError("Error: selection does not include any atoms.")
-        
+
         traj.atom_slice(sel_atoms, inplace=True)
         masses = masses.take(sel_atoms)
 

@@ -23,11 +23,9 @@ def calc_all_directors(xyz, masses, residues):
 
     Returns:
     --------
-    directors : list
-        list of directors
+    dict
+        dict with a np.array of directors and coms
     """
-    masses = np.array(masses)
-
     def la_region_worker(atoms):
         """ worker function for calculating a director. This allows for
         list comprehension
@@ -49,12 +47,21 @@ def calc_all_directors(xyz, masses, residues):
         centered_coords = res_coords - com
         moi = calc_moi(centered_coords, res_mass)
         director = calc_director(moi)
-        return director
+        return [director, com]
+
+    masses = np.array(masses)
 
     la_region_idxs = [la_region for residue in residues for la_region in residue.la_regions]
-    directors = [la_region_worker(atom_indices) for atom_indices in la_region_idxs]
+
+    results = [la_region_worker(atom_indices) for atom_indices in la_region_idxs]
+
+    directors = [result[0] for result in results]
     directors = np.array(directors)
-    return directors
+
+    coms = [result[1] for result in results]
+    coms = np.array(coms)
+    return {"directors": directors,
+            "coms": coms}
 
 
 def calc_order_parameter(directors):
