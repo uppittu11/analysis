@@ -26,13 +26,35 @@ def analyze_all(frame):
                                                   frame.residuelist)
 
     directors = tail_info["directors"]
-    coms = tail_info["coms"]
+    coms = tail_info["coms"].squeeze()
 
-    # Calculate Tilt Angles
-    tilt = analysis.utils.calc_tilt_angle(directors)
+    # Get the locations of each leaflet based on the
+    # z_coord of the COMs
+    z = coms[:,2]
+    peaks = analysis.height.calc_peaks(
+                z, [np.min(z), np.max(z)],
+                n_layers=frame.n_leaflets,
+                prominence=0,
+                distance=50
+                )
 
-    # Calculate Nematic Order Parameter
-    s2 = analysis.utils.calc_order_parameter(directors)
+    # Get z-ranges encompassing each leaflet
+    leaflet_centers = (peaks[1:] + peaks[:-1]) * 0.5
+    leaflet_centers = [-np.inf] + list(leaflet_centers) + [np.inf]
+    leaflet_ranges = [(leaflet_centers[i], leaflet_centers[i+1])
+                      for i in range(len(leaflet_centers)-1)]
+
+    # Get the tilt angle and nematic order for each leaflet
+    tilt = []
+    s2 = []
+    for lmin, lmax in leaflet_ranges:
+        mask = np.logical_and(coms[:,2] > lmin,
+                              coms[:,2] < lmax)
+        leaflet_directors = directors[mask]
+        leaflet_tilt = analysis.utils.calc_tilt_angle(leaflet_directors)
+        leaflet_s2 = analysis.utils.calc_order_parameter(leaflet_directors)
+        tilt.append(leaflet_tilt)
+        s2.append(leaflet_s2)
 
     # Calculate Area per Lipid: cross section / n_lipids
     apl = (frame.unitcell_lengths[0] * frame.unitcell_lengths[1] /
@@ -85,7 +107,6 @@ def main():
     reload_traj = options.reload
     z_min = options.min
     z_max = options.max
-
     selection_string  = options.select
 
 
