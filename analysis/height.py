@@ -53,7 +53,9 @@ def calc_peaks(z, z_range, weights=None, n_layers=0, window=41, smooth=True, **k
     if "prominence" not in kwargs:
         kwargs["prominence"] = np.max(hist) * 0.25
     if "distance" not in kwargs:
-        kwargs["distance"] = 100
+        kwargs["distance"] = 25
+    if "threshold" not in kwargs:
+        kwargs["threshold"] = [0, n_layers]
     peaks, _ = find_peaks(hist, **kwargs)
     peaks = np.sort(peaks)
     peaks = bins[peaks]
