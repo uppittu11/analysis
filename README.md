@@ -53,3 +53,4 @@ To calculate basic structural properties (tilt angle, repeat distance, nematic o
 - Bilayer/Multilayer Height
 - Nematic Order Parameter
 - Area per Lipid
+- Area per Tail
